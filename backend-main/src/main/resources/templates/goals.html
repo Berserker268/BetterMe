@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>My Goals - BetterMe</title>
+   <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="card">
+
+   <h1>My Goals</h1>
+   <p class="subtitle">Make progress, one step at a time.</p>
+
+   <!-- Create Goal Form -->
+   <h2>Create a New Goal</h2>
+
+   <form th:action="@{/goals/create}"
+         th:object="${goalRequest}"
+         method="post">
+
+      <label>Goal Title</label>
+      <input type="text" th:field="*{title}"
+            placeholder="e.g. Learn Spring Boot" required>
+      <p th:if="${#fields.hasErrors('title')}"
+         th:errors="*{title}"></p>
+
+      <label>Description</label>
+      <textarea th:field="*{description}"
+               placeholder="Describe your goal"></textarea>
+
+      <label>Deadline</label>
+      <input type="date" th:field="*{deadline}">
+
+      <button type="submit">Create Goal</button>
+   </form>
+
+   <hr>
+
+   <!-- Display Goals -->
+   <h2>My Goal List</h2>
+
+   <div th:if="${#lists.isEmpty(goals)}">
+      <p>You haven't created any goals yet.</p>
+   </div>
+
+   <div th:each="goal : ${goals}">
+      <h3 th:text="${goal.title}"></h3>
+
+      <p th:text="${goal.description}"></p>
+
+      <p>
+         Deadline:
+         <span th:text="${goal.deadline != null ? goal.deadline : 'Not set'}"></span>
+      </p>
+
+      <p>
+         Status:
+         <span th:text="${goal.status}"></span>
+      </p>
+
+      <p>
+   Progress:
+   <span th:text="${goal.progress}"></span>%
+</p>
+
+<form th:action="@{/goals/update-progress/{id}(id=${goal.id})}"
+   method="post">
+
+   <label>Update Progress</label>
+
+   <input type="number"
+         name="progress"
+         min="0"
+         max="100"
+         th:value="${goal.progress}"
+         required>
+
+   <button type="submit">Update Progress</button>
+</form>
+
+<h4>Edit Goal</h4>
+
+<form th:action="@{/goals/edit/{id}(id=${goal.id})}"
+   method="post">
+
+   <label>Title</label>
+   <input type="text"
+         name="title"
+         th:value="${goal.title}"
+         maxlength="100"
+         required>
+
+   <label>Description</label>
+   <textarea name="description"
+            th:text="${goal.description}"
+            maxlength="1000"></textarea>
+
+   <label>Deadline</label>
+   <input type="date"
+         name="deadline"
+         th:value="${goal.deadline}">
+
+   <label>Progress</label>
+   <input type="number"
+         name="progress"
+         min="0"
+         max="100"
+         th:value="${goal.progress}"
+         required>
+
+   <button type="button"
+        th:onclick="|toggleEdit(${goal.id})|">
+    Edit
+</button>
+
+<div th:id="|edit-form-${goal.id}|" style="display: none;">
+
+    <h4>Edit Goal</h4>
+
+    <form th:action="@{/goals/edit/{id}(id=${goal.id})}"
+          method="post">
+
+        <label>Title</label>
+        <input type="text"
+               name="title"
+               th:value="${goal.title}"
+               maxlength="100"
+               required>
+
+        <label>Description</label>
+        <textarea name="description"
+                  th:text="${goal.description}"
+                  maxlength="1000"></textarea>
+
+        <label>Deadline</label>
+        <input type="date"
+               name="deadline"
+               th:value="${goal.deadline}">
+
+        <label>Progress</label>
+        <input type="number"
+               name="progress"
+               min="0"
+               max="100"
+               th:value="${goal.progress}"
+               required>
+
+        <button type="submit">Save Changes</button>
+
+        <button type="button"
+                th:onclick="|toggleEdit(${goal.id})|">
+            Cancel
+        </button>
+
+    </form>
+</div>
+
+<form th:action="@{/goals/delete/{id}(id=${goal.id})}"
+      method="post">
+
+   <button type="submit">Delete Goal</button>
+</form>
+
+      <hr>
+   </div>
+
+   <a th:href="@{/home}">Back to Home</a>
+
+   <form th:action="@{/logout}" method="post">
+      <button type="submit">Logout</button>
+   </form>
+
+</div>
+<script>
+    function toggleEdit(goalId) {
+        const form = document.getElementById("edit-form-" + goalId);
+
+        if (form.style.display === "none") {
+            form.style.display = "block";
+        } else {
+            form.style.display = "none";
+        }
+    }
+</script>
+</body>
+</html>
