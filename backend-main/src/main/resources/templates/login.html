@@ -2,25 +2,50 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - BetterMe</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-    <h1>Login</h1>
+<body class="auth-body">
+    <div class="auth">
+        <div class="auth-side auth-side-login">
+        </div>
 
-    <p th:if="${param.error}">Wrong email or password.</p>
-    <p th:if="${param.logout}">You have been logged out.</p>
-    <p th:if="${param.registered}">Account created. Please log in.</p>
+        <div class="auth-main">
+            <div class="auth-form">
+                <div class="logo">BetterMe</div>
+                <h1>Welcome back!</h1>
+                <p class="subtitle">Login to keep the streak going!!!</p>
 
-    <form th:action="@{/login}" method="post">
-        <label>Email</label><br>
-        <input type="email" name="username" required><br><br>
+                <div class="message error" th:if="${param.expired}">You were logged out because your password was changed.</div>
+                <div class="message error" th:if="${param.error}">Wrong email or password.</div>
+                <div class="message success" th:if="${param.logout}">You have been logged out.</div>
+                <div class="message success" th:if="${param.registered}">Account created. Please log in.</div>
+                <div class="message success" th:if="${param.reset}">Password updated. Please log in.</div>
 
-        <label>Password</label><br>
-        <input type="password" name="password" required><br><br>
+                <form th:action="@{/login}" method="post">
+                    <div class="field">
+                        <input type="email" name="username" placeholder="Email" aria-label="Email" required>
+                    </div>
+                    <div class="field pw-wrap">
+                        <input type="password" name="password" placeholder="Password" aria-label="Password" required>
+                        <button type="button" class="pw-toggle">Show</button>
+                    </div>
+                    <div class="form-row">
+                        <label class="remember">
+                            <input type="checkbox" name="remember-me"> Remember me
+                        </label>
+                        <a class="forgot" th:href="@{/forgot-password}">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="btn-primary">Log in</button>
+                </form>
 
-        <button type="submit">Login</button>
-    </form>
+                <a class="btn-google" th:href="@{/oauth2/authorization/google}">Log in with Google</a>
 
-    <p>No account? <a th:href="@{/register}">Register</a></p>
+                <p class="switch">Don't have an account? <a th:href="@{/register}">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/auth.js}"></script>
 </body>
 </html>
