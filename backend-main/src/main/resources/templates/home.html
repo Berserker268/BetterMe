@@ -2,14 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Home - BetterMe</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <h1>Welcome to BetterMe</h1>
-    <p>You are logged in.</p>
+    <div class="card">
+        <h1>Welcome to BetterMe</h1>
+        <p class="subtitle">You are logged in.</p>
 
-    <form th:action="@{/logout}" method="post">
-        <button type="submit">Logout</button>
-    </form>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
 </body>
 </html>

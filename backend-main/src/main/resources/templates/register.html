@@ -2,27 +2,48 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Register - BetterMe</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-    <h1>Register</h1>
+<body class="auth-body">
+    <div class="auth">
+        <div class="auth-side auth-side-image">
+            <p class="quote">The sky isn't the limit</p>
+            <p class="quote quote-strong">YOUR MIND IS</p>
+        </div>
 
-    <form th:action="@{/register}" th:object="${registerForm}" method="post">
-        <label>Full name</label><br>
-        <input type="text" th:field="*{fullName}">
-        <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span><br><br>
+        <div class="auth-main">
+            <div class="auth-form">
+                <div class="logo">BetterMe</div>
+                <h1>Create your account</h1>
+                <p class="subtitle">Start your first streak today</p>
 
-        <label>Email</label><br>
-        <input type="text" th:field="*{email}">
-        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br><br>
+                <form th:action="@{/register}" th:object="${registerForm}" method="post">
+                    <div class="field">
+                        <input type="text" th:field="*{fullName}" placeholder="Full name" aria-label="Full name">
+                        <span class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+                    </div>
+                    <div class="field">
+                        <input type="text" th:field="*{email}" placeholder="Email" aria-label="Email">
+                        <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                    </div>
+                    <div class="field">
+                        <div class="pw-wrap">
+                            <input type="password" th:field="*{password}" placeholder="Password" aria-label="Password">
+                            <button type="button" class="pw-toggle">Show</button>
+                        </div>
+                        <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                    </div>
+                    <button type="submit" class="btn-primary">Create account</button>
+                </form>
 
-        <label>Password</label><br>
-        <input type="password" th:field="*{password}">
-        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span><br><br>
+                <a class="btn-google" th:href="@{/oauth2/authorization/google}">Continue with Google</a>
 
-        <button type="submit">Create account</button>
-    </form>
-
-    <p>Already have an account? <a th:href="@{/login}">Login</a></p>
+                <p class="switch">Already have an account? <a th:href="@{/login}">Log in</a></p>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/auth.js}"></script>
 </body>
 </html>
