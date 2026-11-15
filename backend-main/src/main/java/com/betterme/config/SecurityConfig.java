@@ -40,7 +40,7 @@ public class SecurityConfig {
                                                    SessionRegistry sessionRegistry) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/register", "/login", "/forgot-password", "/reset-password",
+                .requestMatchers("/","/register", "/login", "/forgot-password", "/reset-password",
                                  "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
