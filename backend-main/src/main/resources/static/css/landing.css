@@ -105,3 +105,26 @@ body.landing {
   .cta { flex-direction: column; text-align: center; margin: 1rem; }
   .cta .divider { display: none; }
 }
+
+.quote-reveal {
+  -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+  mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+  -webkit-mask-size: 250% 100%;
+  mask-size: 250% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  animation: quote-reveal 3s ease-out 0.4s forwards;
+}
+
+@keyframes quote-reveal {
+  to {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-reveal { animation: none; -webkit-mask-image: none; mask-image: none; }
+}

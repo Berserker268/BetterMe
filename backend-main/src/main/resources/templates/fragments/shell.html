@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="sidebar" th:fragment="sidebar(active)">
+    <div class="logo"><i class="bi bi-graph-up-arrow"></i> BetterMe</div>
+    <a class="nav" th:classappend="${active == 'home'} ? 'active'" th:href="@{/home}"><i class="bi bi-house-door"></i> Home</a>
+    <a class="nav" th:classappend="${active == 'goals'} ? 'active'" th:href="@{/goals}"><i class="bi bi-bullseye"></i> Goals</a>
+    <a class="nav" th:classappend="${active == 'journal'} ? 'active'" th:href="@{/journal}"><i class="bi bi-journal-text"></i> Journal</a>
+    <a class="nav" href="#"><i class="bi bi-signpost-split"></i> Roadmap</a>
+    <a class="nav" href="#"><i class="bi bi-clock"></i> Focus</a>
+    <a class="nav" href="#"><i class="bi bi-bar-chart"></i> Track</a>
+    <a class="nav" th:classappend="${active == 'social'} ? 'active'" href="#"><i class="bi bi-people"></i> Social</a><a class="nav" href="#"><i class="bi bi-chat-square-dots"></i> Mentors</a>
+    <a class="nav" href="#"><i class="bi bi-trophy"></i> Progress</a>
+    <a class="nav" href="#"><i class="bi bi-moon-stars"></i> Prayer</a>
+    
+    <div class="side-card"><b>Keep going!</b><span>You're doing great.</span></div>
+</nav>
+<div class="sh-topbar" th:fragment="topbar">
+    <div class="pill fire"><i class="bi bi-fire"></i> 12 days</div>
+    <div class="pill">Level 4 - 840 XP</div>
+    <i class="bi bi-bell bell"></i>
+    <div class="avatar-wrap">
+        <button class="avatar-btn" id="avatarBtn" type="button">
+            <span class="avatar">M</span><i class="bi bi-chevron-down"></i>
+        </button>
+        <div class="menu" id="avatarMenu">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit"><i class="bi bi-box-arrow-right"></i> Log out</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

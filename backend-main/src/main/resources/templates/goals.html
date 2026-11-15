@@ -8,29 +8,30 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/goals-arena.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/shell.css}">
+  <style>
+  .page { flex: 1; min-width: 0; position: relative; }
+  .shell-top { position: absolute; top: 1rem; right: 1.6rem; z-index: 20; }
+  </style>
 </head>
 <body>
 
-<header class="topbar">
-  <a class="brand" th:href="@{/home}">Better<span>Me</span></a>
-  <nav>
-    <a th:href="@{/home}">Home</a>
-    <a th:href="@{/goals}" class="active">Goals</a>
-    <form th:action="@{/logout}" method="post">
-      <button type="submit" class="link-btn">Logout</button>
-    </form>
-  </nav>
-</header>
+<div class="app">
+<nav th:replace="~{fragments/shell :: sidebar('goals')}"></nav>
+<div class="page">
+<div class="shell-top"><div th:replace="~{fragments/shell :: topbar}"></div></div>
 
 <section class="hero">
   <div class="hero-inner">
-    <p class="eyebrow">Season goals</p>
-    <h1>Road to <span class="hl">CHAMPIONS</span></h1>
-    <p class="hero-sub">Every big goal is a tournament. Clear the qualifiers, survive the regionals, win the final.</p>
+    <p class="eyebrow">Yearly goals</p>
+    <h1>Road to <span class="hl">GREATNESS</span></h1>
+    <p class="hero-sub">Every big goal is a journey. Take the first step, keep going, reach the top.</p>
     <div class="scoreboard" aria-label="Summary">
-      <div class="score"><strong id="stat-total">0</strong><span>Matches</span></div>
-      <div class="score"><strong id="stat-court">0</strong><span>On the court</span></div>
-      <div class="score"><strong id="stat-win">0</strong><span>Victories</span></div>
+      <div class="score"><strong id="stat-total">0</strong><span>Goals</span></div>
+      <div class="score"><strong id="stat-court">0</strong><span>In Progress</span></div>
+      <div class="score"><strong id="stat-win">0</strong><span>Completed</span></div>
     </div>
   </div>
 </section>
@@ -39,7 +40,7 @@
 
   <!-- Create goal -->
   <aside class="panel create-panel">
-    <h2>Schedule a new match</h2>
+    <h2>Schedule a new goal</h2>
     <form th:action="@{/goals/create}" th:object="${goalRequest}" method="post">
       <div class="field">
         <label for="title">Goal title</label>
@@ -51,7 +52,7 @@
         <textarea th:field="*{description}" rows="3" maxlength="1000" placeholder="What does winning look like?"></textarea>
       </div>
       <div class="field">
-        <label for="deadline">Match day (deadline)</label>
+        <label for="deadline">Deadline</label>
         <input type="date" th:field="*{deadline}">
       </div>
       <button type="submit" class="btn btn-primary btn-wide">Create goal</button>
@@ -64,16 +65,16 @@
       <input type="search" id="goal-search" placeholder="Search goals..." aria-label="Search goals">
       <div class="chips" role="group" aria-label="Filter by status">
         <button type="button" class="chip active" data-filter="ALL">All</button>
-        <button type="button" class="chip" data-filter="NOT_STARTED">On the bench</button>
-        <button type="button" class="chip" data-filter="IN_PROGRESS">On the court</button>
-        <button type="button" class="chip" data-filter="COMPLETED">Victory</button>
+        <button type="button" class="chip" data-filter="NOT_STARTED">Pending</button>
+        <button type="button" class="chip" data-filter="IN_PROGRESS">In Progress</button>
+        <button type="button" class="chip" data-filter="COMPLETED">Completed</button>
       </div>
     </div>
 
     <div class="empty" th:if="${#lists.isEmpty(goals)}">
       <img th:src="@{/images/goals-empty.png}" alt="" onerror="this.remove()">
-      <h3>No matches scheduled yet</h3>
-      <p>Your road to Nationals starts with one goal. Create it on the left.</p>
+      <h3>No goals scheduled yet</h3>
+      <p>Your road to greatness starts with one goal. Create it on the left.</p>
     </div>
 
     <p class="empty" id="no-results" hidden>No goals match your search or filter.</p>
@@ -86,25 +87,25 @@
              th:classappend="${st == 'COMPLETED'} ? 'is-win' : (${st == 'IN_PROGRESS'} ? 'is-court' : 'is-bench')">
 
       <div class="goal-head">
-        <span class="tag" th:text="${st == 'COMPLETED' ? 'Victory' : (st == 'IN_PROGRESS' ? 'On the court' : 'On the bench')}">On the bench</span>
+        <span class="tag" th:text="${st == 'COMPLETED' ? 'Completed' : (st == 'IN_PROGRESS' ? 'In Progress' : 'Pending goal')}">Pending</span>
         <span class="countdown js-countdown"></span>
       </div>
 
       <h3 class="goal-title" th:text="${goal.title}">Goal title</h3>
       <p class="goal-desc" th:if="${goal.description != null and !#strings.isEmpty(goal.description)}" th:text="${goal.description}"></p>
-      <p class="meta">Match day: <strong th:text="${goal.deadline != null ? goal.deadline : 'Not set'}">Not set</strong></p>
+      <p class="meta">Deadline: <strong th:text="${goal.deadline != null ? goal.deadline : 'Not set'}">Not set</strong></p>
 
       <div class="progress-block">
         <div class="score-big"><strong th:text="${p}">0</strong><span>%</span></div>
         <div class="track-wrap">
           <div class="track"><div class="fill" th:style="'width:' + ${p} + '%'"></div></div>
           <ol class="stages">
-            <li th:classappend="${p >= 25} ? 'reached'">Qualifiers</li>
-            <li th:classappend="${p >= 50} ? 'reached'">Regionals</li>
-            <li th:classappend="${p >= 75} ? 'reached'">Semi-finals</li>
-            <li th:classappend="${p >= 100} ? 'reached'">Nationals</li>
+            <li th:classappend="${p >= 25} ? 'reached'">Getting Started</li>
+            <li th:classappend="${p >= 50} ? 'reached'">Halfway There</li>
+            <li th:classappend="${p >= 75} ? 'reached'">Almost There</li>
+            <li th:classappend="${p >= 100} ? 'reached'">Completed</li>
           </ol>
-          <p class="pep" th:text="${p >= 100 ? 'You made it to Nationals. Take a bow.' : (p >= 75 ? 'Semi-finals won. One match left.' : (p >= 50 ? 'Halfway there. Keep the rally alive.' : (p >= 25 ? 'Qualifiers cleared. Regionals next.' : 'Warm-up done. Time to play the first set.')))}"></p>
+          <p class="pep" th:text="${p >= 100 ? 'You made it to the top. Take a bow.' : (p >= 75 ? 'Almost there. Keep pushing.' : (p >= 50 ? 'Halfway there. Keep the momentum going.' : (p >= 25 ? 'You are on your way. Keep it up.' : 'Start small, think big.')))}"></p>
         </div>
       </div>
 
@@ -112,7 +113,7 @@
         <form class="quick" th:action="@{/goals/update-progress/{id}(id=${goal.id})}" method="post">
           <label class="sr-only" th:for="|progress-${goal.id}|">Progress</label>
           <input type="number" name="progress" min="0" max="100" th:value="${p}" th:id="|progress-${goal.id}|" required>
-          <button type="submit" class="btn btn-primary">Update score</button>
+          <button type="submit" class="btn btn-primary">Update</button>
         </form>
         <form th:action="@{/goals/delete/{id}(id=${goal.id})}" method="post"
               onsubmit="return confirm('Delete this goal?');">
@@ -147,6 +148,8 @@
     </article>
   </section>
 </main>
+
+</div></div>
 
 <script>
   (function () {
@@ -199,7 +202,7 @@
         out.textContent = 'Overdue by ' + (-days) + (days === -1 ? ' day' : ' days');
         out.classList.add('late');
       } else if (days === 0) {
-        out.textContent = 'Match day is today';
+        out.textContent = 'Deadline is today';
         out.classList.add('urgent');
       } else {
         out.textContent = 'D-' + days;
@@ -208,5 +211,8 @@
     });
   })();
 </script>
+
+<script th:src="@{/js/shell.js}"></script>
+
 </body>
 </html>
