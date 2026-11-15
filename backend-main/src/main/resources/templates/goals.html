@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Goals - BetterMe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/goals-arena.css}">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" th:href="@{/home}">Better<span>Me</span></a>
+  <nav>
+    <a th:href="@{/home}">Home</a>
+    <a th:href="@{/goals}" class="active">Goals</a>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="link-btn">Logout</button>
+    </form>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Season goals</p>
+    <h1>Road to <span class="hl">CHAMPIONS</span></h1>
+    <p class="hero-sub">Every big goal is a tournament. Clear the qualifiers, survive the regionals, win the final.</p>
+    <div class="scoreboard" aria-label="Summary">
+      <div class="score"><strong id="stat-total">0</strong><span>Matches</span></div>
+      <div class="score"><strong id="stat-court">0</strong><span>On the court</span></div>
+      <div class="score"><strong id="stat-win">0</strong><span>Victories</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="layout">
+
+  <!-- Create goal -->
+  <aside class="panel create-panel">
+    <h2>Schedule a new match</h2>
+    <form th:action="@{/goals/create}" th:object="${goalRequest}" method="post">
+      <div class="field">
+        <label for="title">Goal title</label>
+        <input type="text" th:field="*{title}" placeholder="e.g. Learn Spring Boot" maxlength="100" required>
+        <p class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+      </div>
+      <div class="field">
+        <label for="description">Description</label>
+        <textarea th:field="*{description}" rows="3" maxlength="1000" placeholder="What does winning look like?"></textarea>
+      </div>
+      <div class="field">
+        <label for="deadline">Match day (deadline)</label>
+        <input type="date" th:field="*{deadline}">
+      </div>
+      <button type="submit" class="btn btn-primary btn-wide">Create goal</button>
+    </form>
+  </aside>
+
+  <!-- Goal list -->
+  <section class="board">
+    <div class="toolbar">
+      <input type="search" id="goal-search" placeholder="Search goals..." aria-label="Search goals">
+      <div class="chips" role="group" aria-label="Filter by status">
+        <button type="button" class="chip active" data-filter="ALL">All</button>
+        <button type="button" class="chip" data-filter="NOT_STARTED">On the bench</button>
+        <button type="button" class="chip" data-filter="IN_PROGRESS">On the court</button>
+        <button type="button" class="chip" data-filter="COMPLETED">Victory</button>
+      </div>
+    </div>
+
+    <div class="empty" th:if="${#lists.isEmpty(goals)}">
+      <img th:src="@{/images/goals-empty.png}" alt="" onerror="this.remove()">
+      <h3>No matches scheduled yet</h3>
+      <p>Your road to Nationals starts with one goal. Create it on the left.</p>
+    </div>
+
+    <p class="empty" id="no-results" hidden>No goals match your search or filter.</p>
+
+    <article class="goal-card" th:each="goal : ${goals}"
+             th:with="st=${#strings.toString(goal.status)}, p=${goal.progress ?: 0}"
+             th:data-status="${st}"
+             th:data-deadline="${goal.deadline}"
+             th:data-search="${#strings.toLowerCase(goal.title + ' ' + (goal.description ?: ''))}"
+             th:classappend="${st == 'COMPLETED'} ? 'is-win' : (${st == 'IN_PROGRESS'} ? 'is-court' : 'is-bench')">
+
+      <div class="goal-head">
+        <span class="tag" th:text="${st == 'COMPLETED' ? 'Victory' : (st == 'IN_PROGRESS' ? 'On the court' : 'On the bench')}">On the bench</span>
+        <span class="countdown js-countdown"></span>
+      </div>
+
+      <h3 class="goal-title" th:text="${goal.title}">Goal title</h3>
+      <p class="goal-desc" th:if="${goal.description != null and !#strings.isEmpty(goal.description)}" th:text="${goal.description}"></p>
+      <p class="meta">Match day: <strong th:text="${goal.deadline != null ? goal.deadline : 'Not set'}">Not set</strong></p>
+
+      <div class="progress-block">
+        <div class="score-big"><strong th:text="${p}">0</strong><span>%</span></div>
+        <div class="track-wrap">
+          <div class="track"><div class="fill" th:style="'width:' + ${p} + '%'"></div></div>
+          <ol class="stages">
+            <li th:classappend="${p >= 25} ? 'reached'">Qualifiers</li>
+            <li th:classappend="${p >= 50} ? 'reached'">Regionals</li>
+            <li th:classappend="${p >= 75} ? 'reached'">Semi-finals</li>
+            <li th:classappend="${p >= 100} ? 'reached'">Nationals</li>
+          </ol>
+          <p class="pep" th:text="${p >= 100 ? 'You made it to Nationals. Take a bow.' : (p >= 75 ? 'Semi-finals won. One match left.' : (p >= 50 ? 'Halfway there. Keep the rally alive.' : (p >= 25 ? 'Qualifiers cleared. Regionals next.' : 'Warm-up done. Time to play the first set.')))}"></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <form class="quick" th:action="@{/goals/update-progress/{id}(id=${goal.id})}" method="post">
+          <label class="sr-only" th:for="|progress-${goal.id}|">Progress</label>
+          <input type="number" name="progress" min="0" max="100" th:value="${p}" th:id="|progress-${goal.id}|" required>
+          <button type="submit" class="btn btn-primary">Update score</button>
+        </form>
+        <form th:action="@{/goals/delete/{id}(id=${goal.id})}" method="post"
+              onsubmit="return confirm('Delete this goal?');">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+
+      <details class="edit">
+        <summary>Edit details</summary>
+        <form th:action="@{/goals/edit/{id}(id=${goal.id})}" method="post">
+          <div class="field">
+            <label>Title</label>
+            <input type="text" name="title" th:value="${goal.title}" maxlength="100" required>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea name="description" rows="3" maxlength="1000" th:text="${goal.description}"></textarea>
+          </div>
+          <div class="field two">
+            <div>
+              <label>Deadline</label>
+              <input type="date" name="deadline" th:value="${goal.deadline}">
+            </div>
+            <div>
+              <label>Progress</label>
+              <input type="number" name="progress" min="0" max="100" th:value="${p}" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+      </details>
+    </article>
+  </section>
+</main>
+
+<script>
+  (function () {
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.goal-card'));
+    var chips = document.querySelectorAll('.chip');
+    var search = document.getElementById('goal-search');
+    var noResults = document.getElementById('no-results');
+    var filter = 'ALL';
+
+    function countStatus(status) {
+      return cards.filter(function (c) { return c.dataset.status === status; }).length;
+    }
+    document.getElementById('stat-total').textContent = cards.length;
+    document.getElementById('stat-court').textContent = countStatus('IN_PROGRESS');
+    document.getElementById('stat-win').textContent = countStatus('COMPLETED');
+
+    function applyFilters() {
+      var q = search.value.trim().toLowerCase();
+      var shown = 0;
+      cards.forEach(function (c) {
+        var okStatus = filter === 'ALL' || c.dataset.status === filter;
+        var okText = !q || (c.dataset.search || '').indexOf(q) !== -1;
+        c.hidden = !(okStatus && okText);
+        if (!c.hidden) shown++;
+      });
+      if (noResults) noResults.hidden = !(cards.length > 0 && shown === 0);
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        chips.forEach(function (c) { c.classList.remove('active'); });
+        chip.classList.add('active');
+        filter = chip.dataset.filter;
+        applyFilters();
+      });
+    });
+    search.addEventListener('input', applyFilters);
+
+    // Match-day countdown (browser-side, no backend needed)
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    cards.forEach(function (c) {
+      var out = c.querySelector('.js-countdown');
+      var d = c.dataset.deadline;
+      if (!out || !d || c.dataset.status === 'COMPLETED') return;
+      var parts = d.split('-');
+      var due = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+      var days = Math.round((due - today) / 86400000);
+      if (days < 0) {
+        out.textContent = 'Overdue by ' + (-days) + (days === -1 ? ' day' : ' days');
+        out.classList.add('late');
+      } else if (days === 0) {
+        out.textContent = 'Match day is today';
+        out.classList.add('urgent');
+      } else {
+        out.textContent = 'D-' + days;
+        if (days <= 3) out.classList.add('urgent');
+      }
+    });
+  })();
+</script>
+</body>
+</html>

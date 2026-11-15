@@ -11,6 +11,11 @@
         <h1>Welcome to BetterMe</h1>
         <p class="subtitle">You are logged in.</p>
 
+        <a th:href="@{/goals}" class="btn-primary"
+           style="display:block; padding:11px; margin-bottom:12px; text-align:center; text-decoration:none; font-weight:600;">
+            Check your goals
+        </a>
+
         <form th:action="@{/logout}" method="post">
             <button type="submit">Logout</button>
         </form>
