@@ -69,7 +69,7 @@
     <section class="cta">
         <i class="ti ti-mountain mount"></i>
         <span class="divider"></span>
-        <p>A motivated mind builds a greater tomorrow.</p>
+        <p class="quote-reveal" th:text="|“${quote.text()}” — ${quote.author()}|"></p>
         <a class="btn btn-dark" th:href="@{/register}">Start your BetterMe journey today <i class="ti ti-arrow-right"></i></a>
     </section>
 

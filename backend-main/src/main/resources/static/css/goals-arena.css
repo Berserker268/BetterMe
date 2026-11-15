@@ -1,16 +1,9 @@
 :root {
-  --bg: #F5F2E8; --surface: #FFFFFF; --ink: #0B1F3A; --muted: #5A6A80; --line: #DCE1E8;
-  --navy: #0B1F3A; --sky: #1E88E5; --orange: #FF6B2C; --gold: #F5B700; --danger: #C62828;
-  --shadow: 0 6px 18px rgba(11, 31, 58, .10);
+  --bg: #07111F; --surface: #0F2038; --ink: #EAF2FF; --muted: #9DB0C8; --line: #22385A;
+  --navy: #0B1F3A; --sky: #4DA3FF; --orange: #FF8247; --gold: #FFC93C; --danger: #FF8A80;
+  --shadow: 0 6px 18px rgba(0, 0, 0, .35);
   --font-head: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
   --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #07111F; --surface: #0F2038; --ink: #EAF2FF; --muted: #9DB0C8; --line: #22385A;
-    --sky: #4DA3FF; --orange: #FF8247; --gold: #FFC93C; --danger: #FF8A80;
-    --shadow: 0 6px 18px rgba(0, 0, 0, .35);
-  }
 }
 
 * { box-sizing: border-box; }

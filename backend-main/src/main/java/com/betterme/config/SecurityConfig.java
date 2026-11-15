@@ -44,6 +44,9 @@ public class SecurityConfig {
                                  "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(new org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint("/"))
+            )
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/home", true)
@@ -64,7 +67,7 @@ public class SecurityConfig {
                 .expiredUrl("/login?expired")
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
+                .logoutSuccessUrl("/")
                 .permitAll()
             );
 
