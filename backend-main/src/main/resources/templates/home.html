@@ -1,24 +1,145 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Home - BetterMe</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BetterMe - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
-    <div class="card">
-        <h1>Welcome to BetterMe</h1>
-        <p class="subtitle">You are logged in.</p>
+<body class="app-body">
+<div class="app">
 
-        <a th:href="@{/goals}" class="btn-primary"
-           style="display:block; padding:11px; margin-bottom:12px; text-align:center; text-decoration:none; font-weight:600;">
-            Check your goals
-        </a>
+  <nav class="sidebar">
+    <div class="logo"><i class="bi bi-graph-up-arrow"></i> BetterMe</div>
+    <a class="nav active" href="/home"><i class="bi bi-house-door"></i> Home</a>
+    <a class="nav" th:href="@{/goals}"><i class="bi bi-bullseye"></i> Goals</a>
+    <a class="nav" href="#"><i class="bi bi-signpost-split"></i> Roadmap</a>
+    <a class="nav" href="#"><i class="bi bi-clock"></i> Focus</a>
+    <a class="nav" href="#"><i class="bi bi-bar-chart"></i> Track</a>
+    <a class="nav" href="#"><i class="bi bi-people"></i> Social</a>
+    <a class="nav" href="#"><i class="bi bi-chat-square-dots"></i> Mentors</a>
+    <a class="nav" href="#"><i class="bi bi-trophy"></i> Progress</a>
+    <a class="nav" href="#"><i class="bi bi-moon-stars"></i> Prayer</a>
 
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">Logout</button>
-        </form>
-    </div>
+    <div class="side-card"><b>Keep going!</b><span>You're doing great.</span></div>
+  </nav>
+
+  <main class="main">
+
+    <section class="hero">
+
+      <div class="topbar">
+        <div class="pill fire"><i class="bi bi-fire"></i> 12 days</div>
+        <div class="pill">Level 4 - 840 XP</div>
+        <i class="bi bi-bell bell"></i>
+        <div class="avatar-wrap">
+          <button class="avatar-btn" id="avatarBtn" type="button">
+            <span class="avatar">M</span><i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="menu" id="avatarMenu">
+            <form th:action="@{/logout}" method="post">
+              <button type="submit"><i class="bi bi-box-arrow-right"></i> Log out</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="greeting">
+        <h1><span id="hello">Good morning</span>, Mahdi!</h1>
+        <p>Be a little <em>better</em> than yesterday.</p>
+      </div>
+
+      <div class="top-cards">
+        <div class="box">
+          <h2>Your Progress</h2>
+          <div class="progress-body">
+            <div class="ring" style="--p:72%"><span>72%</span></div>
+            <div class="stat-list">
+              <div class="stat-item"><i class="bi bi-graph-up-arrow"></i><div><b>840 XP</b><span class="muted">Level 4</span></div></div>
+              <div class="stat-item"><i class="bi bi-trophy"></i><div><b>12</b><span class="muted">Total Streak (days)</span></div></div>
+              <div class="stat-item"><i class="bi bi-star-fill"></i><div><b>620</b><span class="muted">Total Points</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="box-head"><h2>Today's Tasks</h2><a href="#">View all →</a></div>
+          <div class="task done"><i class="bi bi-check-circle"></i><span class="name">Read chapter 3</span><span class="badge">Completed</span></div>
+          <div class="task"><i class="bi bi-circle"></i><span class="name">Morning workout</span></div>
+          <div class="task"><i class="bi bi-circle"></i><span class="name">Fajr prayer</span></div>
+          <div class="task"><i class="bi bi-circle"></i><span class="name">25 min focus session</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row2">
+      <div class="box">
+        <h2>Streak & Rewards</h2>
+        <div class="rewards-body">
+          <div class="r-streak">
+            <i class="bi bi-fire big-icon"></i>
+            <div><div class="big-text">12 days</div><span class="muted">Current streak</span></div>
+          </div>
+          <div class="r-level">
+            <i class="bi bi-trophy trophy-sq"></i>
+            <div class="level-info">
+              <div class="level-title">Level 4</div>
+              <span class="muted">840 / 1000 XP</span>
+              <div class="bar"><span style="width:84%"></span></div>
+            </div>
+          </div>
+          <div class="r-next">
+            <span class="muted">Next reward:</span>
+            <div class="next-xp"><i class="bi bi-gift"></i> 50 XP</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="box-head"><h2>Friends Activity</h2><a href="#">View all →</a></div>
+        <div class="friend"><div class="avatar green">YC</div><span class="text"><b>Yamin</b> finished a 7-day challenge</span><span class="muted">2h ago</span></div>
+        <div class="friend"><div class="avatar orange">RM</div><span class="text"><b>Raiyan</b> reached a 5-day streak</span><span class="muted">4h ago</span></div>
+      </div>
+    </section>
+
+    <section class="row3">
+        <div class="box recent">
+            <div class="box-head"><h2>Your Recent Activity</h2><a class="btn-outline" href="#">View Progress →</a></div>
+            <div class="activity"><i class="bi bi-graph-up-arrow"></i><span class="what">Completed "Read chapter 3"</span><span class="muted">2h ago</span></div>
+            <div class="activity"><i class="bi bi-trophy"></i><span class="what">Earned 50 XP</span><span class="muted">2h ago</span></div>
+        </div>
+        
+        <div class="box prayer">
+            <div class="box-head"><h2>Prayer</h2><a href="#">View all →</a></div>
+            <div class="prayer-body">
+                <i class="bi bi-moon-stars"></i>
+                <div>
+                    <span class="muted">Next prayer</span>
+                    <div class="prayer-name">Maghrib</div>
+                    <span class="muted">5:12 PM</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  var h = new Date().getHours();
+  document.getElementById("hello").textContent =
+    h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+
+  var btn = document.getElementById("avatarBtn");
+  var menu = document.getElementById("avatarMenu");
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    menu.classList.toggle("open");
+  });
+  document.addEventListener("click", function () { menu.classList.remove("open"); });
+</script>
 </body>
 </html>

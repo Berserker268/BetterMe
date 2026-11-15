@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BetterMe - Be a little better than yesterday</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+    <link rel="stylesheet" th:href="@{/css/landing.css}">
+</head>
+<body class="landing">
+
+    <div class="stage">
+        <header class="nav">
+            <a class="brand" th:href="@{/}">
+                <svg viewBox="0 0 32 32" width="40" height="40" fill="none" stroke="#E8955A" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M6 27V21M14 27V16M22 27V11" stroke-width="4"/>
+                    <path d="M4 15l8-6 6 3 9-8" stroke-width="2.2"/>
+                    <path d="M22 4h5v5" stroke-width="2.2"/>
+                </svg>
+                BetterMe
+            </a>
+            <div class="nav-actions">
+                <a class="btn btn-outline" th:href="@{/login}">Login</a>
+                <a class="btn btn-solid" th:href="@{/register}">Register</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h1>BetterMe</h1>
+            <p class="tagline">Be a little <em>better</em> than yesterday</p>
+            <p class="lead">Stop procrastinating. Stay motivated. Achieve more.</p>
+            <p class="sub">Set goals, build roadmaps, track progress, and get support from AI coaches and friends — all in one place.</p>
+            <div><a class="btn btn-solid btn-large" th:href="@{/register}">Get Started Now <i class="ti ti-arrow-right"></i></a></div>
+        </section>
+
+        <section class="features">
+            <div class="feature"><i class="ti ti-target-arrow ico"></i><h3>Set Goals</h3><p>Study, fitness, prayer,<br>skill or habit</p></div>
+            <div class="feature">
+                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/>
+                    <path d="M11 7l-5 10M13 7l5 10M7.5 19h9"/>
+                </svg>
+                <h3>Build Roadmaps</h3><p>Plan your journey</p>
+            </div>
+            <div class="feature"><i class="ti ti-chart-bar ico"></i><h3>Track Progress</h3><p>See your growth</p></div>
+            <div class="feature"><i class="ti ti-robot ico"></i><h3>AI Coaches</h3><p>Get personalised advice</p></div>
+            <div class="feature"><i class="ti ti-users ico"></i><h3>Stay Connected</h3><p>Grow together</p></div>
+            <div class="feature"><i class="ti ti-trophy ico"></i><h3>Earn Streaks</h3><p>Keep the momentum</p></div>
+        </section>
+    </div>
+
+    <section class="how">
+        <div>
+            <h2>How It Works?</h2>
+            <p class="how-sub">A simple journey to a better you.</p>
+        </div>
+        <div class="steps">
+            <div class="step"><span class="num">1</span><i class="ti ti-clipboard-list"></i><h3>Set Your Goals</h3><p>Choose what you want to improve — study, fitness, prayer, and more.</p></div>
+            <i class="ti ti-arrow-right arrow"></i>
+            <div class="step"><span class="num">2</span><i class="ti ti-map"></i><h3>Create Your Roadmap</h3><p>Plan daily tasks and build custom courses.</p></div>
+            <i class="ti ti-arrow-right arrow"></i>
+            <div class="step"><span class="num">3</span><i class="ti ti-chart-line"></i><h3>Track &amp; Improve</h3><p>Mark your progress and reach new milestones.</p></div>
+            <i class="ti ti-arrow-right arrow"></i>
+            <div class="step"><span class="num">4</span><i class="ti ti-trophy"></i><h3>Rise Higher</h3><p>Unlock rewards, climb the leaderboard and keep going!</p></div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <i class="ti ti-mountain mount"></i>
+        <span class="divider"></span>
+        <p>A motivated mind builds a greater tomorrow.</p>
+        <a class="btn btn-dark" th:href="@{/register}">Start your BetterMe journey today <i class="ti ti-arrow-right"></i></a>
+    </section>
+
+</body>
+</html>
