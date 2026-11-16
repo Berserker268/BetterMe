@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="entries">
+  <p class="history-empty" th:if="${historyPage.empty}"
+     th:text="${historyDate != null ? 'No entry for this date.' : 'No entries yet.'}">No entries yet.</p>
+  <article class="history-entry" th:each="entry : ${historyPage.content}">
+    <div class="history-entry-head">
+      <h3 th:text="${entry.title}">Entry title</h3>
+      <span class="chip" th:text="${entry.mood}">Calm</span>
+    </div>
+    <p class="history-date" th:text="${#temporals.format(entry.entryDate, 'MMMM d, yyyy')}">Date</p>
+    <p th:if="${entry.privateNote}" class="private-preview">Private note</p>
+    <p th:unless="${entry.privateNote}" th:text="${#strings.abbreviate(entry.text, 120)}">Preview</p>
+    <div class="entry-actions">
+      <button type="button" class="view-btn" onclick="openHistoryEntry(this)"
+              th:data-title="${entry.title}" th:data-date="${entry.entryDate}"
+              th:data-mood="${entry.mood}" th:data-text="${entry.text}">View</button>
+      <form th:action="@{/journal/delete/{id}(id=${entry.id})}" method="post"
+            onsubmit="return confirm('Permanently delete this journal entry?');">
+        <input type="hidden" name="history" value="true">
+        <button type="submit" class="delete-entry-btn">Delete</button>
+      </form>
+    </div>
+  </article>
+  <div class="history-pagination" th:unless="${historyPage.empty}">
+    <button type="button" class="view-btn" th:disabled="${!historyPage.hasPrevious()}"
+            th:data-page="${historyPage.number - 1}" onclick="loadHistory(Number(this.dataset.page))">Previous</button>
+    <span th:text="|${historyPage.number + 1} / ${historyPage.totalPages}|">1 / 1</span>
+    <button type="button" class="view-btn" th:disabled="${!historyPage.hasNext()}"
+            th:data-page="${historyPage.number + 1}" onclick="loadHistory(Number(this.dataset.page))">Next</button>
+  </div>
+</div>
+</body>
+</html>

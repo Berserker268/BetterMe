@@ -6,6 +6,12 @@ import com.betterme.journal.repository.JournalEntryRepository;
 import com.betterme.user.User;
 import com.betterme.user.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -57,6 +63,22 @@ public class JournalService {
         entry.setPrivateNote(form.isPrivateNote());
 
         return journalEntryRepository.save(entry);
+    }
+
+    public Page<JournalEntry> getHistory(String email, LocalDate date, int page) {
+        User user = getUser(email);
+        var pageable = PageRequest.of(Math.max(0, page), 10, Sort.by("entryDate").descending());
+        return date == null
+                ? journalEntryRepository.findByUserId(user.getId(), pageable)
+                : journalEntryRepository.findByUserIdAndEntryDate(user.getId(), date, pageable);
+    }
+
+    @Transactional
+    public void deleteEntry(String email, Long entryId) {
+        User user = getUser(email);
+        JournalEntry entry = journalEntryRepository.findByIdAndUserId(entryId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry not found"));
+        journalEntryRepository.delete(entry);
     }
 
     public JournalEntryForm toForm(Optional<JournalEntry> entry) {

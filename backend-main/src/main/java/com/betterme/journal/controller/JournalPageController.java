@@ -11,6 +11,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -70,6 +73,26 @@ public class JournalPageController {
         redirectAttributes.addFlashAttribute("successMessage", "Today's reflection has been saved.");
 
         return "redirect:/journal";
+    }
+
+    @PostMapping("/journal/delete/{id}")
+    public String deleteEntry(@PathVariable("id") Long id,
+                              @RequestParam(name = "history", defaultValue = "false") boolean history,
+                              Authentication authentication,
+                              RedirectAttributes redirectAttributes) {
+        journalService.deleteEntry(authentication.getName(), id);
+        redirectAttributes.addFlashAttribute("successMessage", "Journal entry deleted.");
+        return history ? "redirect:/journal?history=true" : "redirect:/journal";
+    }
+
+    @GetMapping("/journal/history")
+    public String history(Authentication authentication, Model model,
+                          @RequestParam(name = "page", defaultValue = "0") int page,
+                          @RequestParam(name = "date", required = false)
+                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        model.addAttribute("historyPage", journalService.getHistory(authentication.getName(), date, page));
+        model.addAttribute("historyDate", date);
+        return "fragments/journal-history :: entries";
     }
 
     private void addPageAttributes(Model model,
