@@ -6,27 +6,24 @@
   <title>Captain's Daily Logbook - BetterMe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/shell.css}">
   <link rel="stylesheet" th:href="@{/css/journal.css}">
 </head>
 <body>
 
+<div class="app">
+<nav th:replace="~{fragments/shell :: sidebar('journal')}"></nav>
+<div class="journal-page">
+<div class="journal-topbar"><div th:replace="~{fragments/shell :: topbar}"></div></div>
 <header class="log-header">
   <div class="header-inner">
-    <a class="brand" th:href="@{/home}">Better<span>Me</span></a>
     <div class="title-block">
       <p class="eyebrow">Daily reflection journal</p>
       <h1>Captain's Daily Logbook</h1>
       <p>Compare yesterday's reflection beside today's next small step.</p>
     </div>
-    <nav>
-      <a th:href="@{/home}">Home</a>
-      <a th:href="@{/goals}">Goals</a>
-      <a th:href="@{/journal}" class="active">Journal</a>
-      <form th:action="@{/logout}" method="post">
-        <button type="submit">Logout</button>
-      </form>
-    </nav>
   </div>
 </header>
 
@@ -113,14 +110,21 @@
               <label for="text">3. Today's reflection</label>
               <span id="today-word-count">0 words</span>
             </div>
-            <textarea id="text" th:field="*{text}" rows="8" maxlength="5000" placeholder="Write at least a few lines about today..." oninput="updateWordCount()"></textarea>
+            <div class="reflection-editor" id="reflection-editor" th:classappend="${journalEntryForm.privateNote} ? 'is-concealed'">
+              <textarea id="text" th:field="*{text}" rows="8" maxlength="5000" placeholder="Write at least a few lines about today..." oninput="updateWordCount()"></textarea>
+              <div class="note-cover">
+                <span>Private note</span>
+                <button type="button" class="view-btn" onclick="toggleNoteVisibility()">Show note</button>
+              </div>
+              <button type="button" class="view-btn conceal-note" onclick="toggleNoteVisibility()">Hide note</button>
+            </div>
             <p class="field-error" th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></p>
           </div>
 
           <div class="form-bottom">
             <label class="private-toggle">
-              <input type="checkbox" th:field="*{privateNote}">
-              <span>Hide note text in the summary log</span>
+              <input type="checkbox" th:field="*{privateNote}" onchange="updateNotePrivacy(this.checked)">
+              <span>Hide note text on this page</span>
             </label>
             <button type="submit" class="save-btn" th:text="${todayEntry == null ? 'Save Today''s Entry' : 'Update Today''s Entry'}">Save Today's Entry</button>
           </div>
@@ -129,16 +133,18 @@
     </div>
   </section>
 
+  <aside class="journal-summary-column">
   <section class="summary-card" aria-label="Yesterday vs today summary">
     <div class="summary-head">
       <div>
-        <h2>Yesterday vs. Today Summary</h2>
-        <p>Only the last two days, kept simple.</p>
+        <h2>Summary</h2>
+        <p>Yesterday vs. Today</p>
       </div>
-      <span>2-day log</span>
+      <span th:text="${yesterdayEntry != null and todayEntry != null ? '2 entries' : (yesterdayEntry != null or todayEntry != null ? '1 entry' : '0 entries')}">0 entries</span>
     </div>
 
-    <div class="table-wrap">
+    <p class="summary-empty" th:if="${yesterdayEntry == null and todayEntry == null}">No entries yet</p>
+    <div class="table-wrap" th:if="${yesterdayEntry != null or todayEntry != null}">
       <table>
         <thead>
         <tr>
@@ -151,7 +157,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr th:if="${yesterdayEntry != null}">
           <td><span class="day-pill">Yesterday</span></td>
           <td th:text="${yesterdayLabel}">Saturday, Nov 14, 2026</td>
           <td th:text="${yesterdayEntry != null ? yesterdayEntry.mood : '-'}">Calm</td>
@@ -161,9 +167,15 @@
             <span th:if="${yesterdayEntry != null and yesterdayEntry.privateNote}" class="private-preview">Private note</span>
             <span th:if="${yesterdayEntry != null and !yesterdayEntry.privateNote}" th:text="${#strings.abbreviate(yesterdayEntry.text, 120)}">Preview</span>
           </td>
-          <td><button type="button" class="view-btn" th:disabled="${yesterdayEntry == null}" onclick="openEntry('yesterday')">View</button></td>
+          <td class="entry-actions">
+            <button type="button" class="view-btn" onclick="openEntry('yesterday')">View</button>
+            <form th:action="@{/journal/delete/{id}(id=${yesterdayEntry.id})}" method="post"
+                  onsubmit="return confirm('Permanently delete this journal entry?');">
+              <button type="submit" class="delete-entry-btn">Delete</button>
+            </form>
+          </td>
         </tr>
-        <tr class="today-row">
+        <tr class="today-row" th:if="${todayEntry != null}">
           <td><span class="day-pill today">Today</span></td>
           <td th:text="${todayLabel}">Sunday, Nov 15, 2026</td>
           <td th:text="${todayEntry != null ? todayEntry.mood : journalEntryForm.mood}">Calm</td>
@@ -173,15 +185,41 @@
             <span th:if="${todayEntry != null and todayEntry.privateNote}" class="private-preview">Private note</span>
             <span th:if="${todayEntry != null and !todayEntry.privateNote}" th:text="${#strings.abbreviate(todayEntry.text, 120)}">Preview</span>
           </td>
-          <td><button type="button" class="view-btn" th:disabled="${todayEntry == null}" onclick="openEntry('today')">View</button></td>
+          <td class="entry-actions">
+            <button type="button" class="view-btn" onclick="openEntry('today')">View</button>
+            <form th:action="@{/journal/delete/{id}(id=${todayEntry.id})}" method="post"
+                  onsubmit="return confirm('Permanently delete this journal entry?');">
+              <button type="submit" class="delete-entry-btn">Delete</button>
+            </form>
+          </td>
         </tr>
         </tbody>
       </table>
     </div>
   </section>
+  <button type="button" class="history-open-btn" onclick="openHistory()"><i class="bi bi-clock-history"></i> Journal history</button>
+  </aside>
 </main>
+</div>
+</div>
 
-<div id="entry-modal" class="modal" hidden onclick="if (event.target === this) closeEntry()">
+<div id="history-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="history-heading" hidden
+     onclick="if (event.target === this) closeHistory()">
+  <div class="modal-card history-panel">
+    <button type="button" class="modal-close" onclick="closeHistory()" aria-label="Close history">x</button>
+    <h2 id="history-heading">Journal history</h2>
+    <p>Your reflections, newest first.</p>
+    <form class="history-filter" onsubmit="event.preventDefault(); loadHistory(0)">
+      <label for="history-date">Find by date</label>
+      <input type="date" id="history-date" name="date">
+      <button type="submit" class="view-btn">Find</button>
+      <button type="button" class="view-btn" onclick="document.getElementById('history-date').value = ''; loadHistory(0)">All entries</button>
+    </form>
+    <div id="history-results" aria-live="polite"></div>
+  </div>
+</div>
+
+<div id="entry-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden onclick="if (event.target === this) closeEntry()">
   <div class="modal-card">
     <button type="button" class="modal-close" onclick="closeEntry()" aria-label="Close">x</button>
     <span id="modal-day" class="day-pill">Today</span>
@@ -249,6 +287,7 @@
   }
 
   function insertPrompt() {
+    document.getElementById('reflection-editor').classList.remove('is-concealed');
     var textarea = document.getElementById('text');
     var spacer = textarea.value.trim() ? '\n\n' : '';
     textarea.value += spacer + document.getElementById('prompt-text').textContent + '\n';
@@ -271,7 +310,81 @@
     document.getElementById('entry-modal').hidden = true;
   }
 
+  function updateNotePrivacy(isPrivate) {
+    document.getElementById('reflection-editor').classList.toggle('is-concealed', isPrivate);
+  }
+
+  var historyRequest;
+  var historyReturnFocus;
+
+  function openHistory() {
+    historyReturnFocus = document.activeElement;
+    document.getElementById('history-modal').hidden = false;
+    document.getElementById('history-date').focus();
+    loadHistory(0);
+  }
+
+  function closeHistory() {
+    document.getElementById('history-modal').hidden = true;
+    if (historyRequest) historyRequest.abort();
+    if (historyReturnFocus) historyReturnFocus.focus();
+  }
+
+  async function loadHistory(page) {
+    if (historyRequest) historyRequest.abort();
+    historyRequest = new AbortController();
+    var results = document.getElementById('history-results');
+    var query = new URLSearchParams({page: String(page)});
+    var date = document.getElementById('history-date').value;
+    if (date) query.set('date', date);
+    results.textContent = 'Loading entries...';
+    try {
+      var response = await fetch('/journal/history?' + query.toString(), {signal: historyRequest.signal});
+      if (response.redirected) {
+        window.location.assign(response.url);
+        return;
+      }
+      if (!response.ok) throw new Error('Could not load history');
+      results.innerHTML = await response.text();
+    } catch (error) {
+      if (error.name !== 'AbortError') results.textContent = 'Could not load entries. Please try again.';
+    }
+  }
+
+  function openHistoryEntry(button) {
+    entries.history = {
+      day: 'Journal entry', date: button.dataset.date,
+      title: button.dataset.title, mood: button.dataset.mood, text: button.dataset.text
+    };
+    openEntry('history');
+  }
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      if (!document.getElementById('entry-modal').hidden) closeEntry();
+      else if (!document.getElementById('history-modal').hidden) closeHistory();
+    }
+  });
+
+  function toggleNoteVisibility() {
+    var editor = document.getElementById('reflection-editor');
+    editor.classList.toggle('is-concealed');
+    if (!editor.classList.contains('is-concealed')) {
+      document.getElementById('text').focus();
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    if (new URLSearchParams(window.location.search).get('history') === 'true') openHistory();
+    var toast = document.querySelector('.toast');
+    if (toast) {
+      window.setTimeout(function () {
+        toast.classList.add('is-dismissing');
+        window.setTimeout(function () {
+          toast.remove();
+        }, 400);
+      }, 1000);
+    }
     updateWordCount();
     var yesterdayCount = document.getElementById('yesterday-word-count');
     if (yesterdayCount) {
@@ -279,5 +392,6 @@
     }
   });
 </script>
+<script th:src="@{/js/shell.js}"></script>
 </body>
 </html>

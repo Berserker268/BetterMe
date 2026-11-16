@@ -1,3 +1,23 @@
+.entry-actions form {
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.delete-entry-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--crimson);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--crimson);
+  font: 600 12px "Inter", system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.delete-entry-btn:hover {
+  background: var(--crimson);
+  color: var(--parchment-light);
+}
+
 :root {
   --parchment: #f4ebd0;
   --parchment-light: #faf4e4;
@@ -24,89 +44,58 @@ body {
     repeating-linear-gradient(0deg, rgba(244, 235, 208, 0.035) 0 1px, transparent 1px 44px),
     repeating-linear-gradient(90deg, rgba(244, 235, 208, 0.035) 0 1px, transparent 1px 44px);
   color: var(--ink);
-  font-family: "Crimson Pro", Georgia, serif;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.journal-page {
+  flex: 1;
+  min-width: 0;
+}
+
+.journal-topbar {
+  padding: 1rem 1.6rem;
 }
 
 .log-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(14, 34, 56, 0.96);
-  border-bottom: 2px solid var(--gold);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  color: var(--parchment);
+  margin-top: -24px;
 }
 
 .header-inner {
-  max-width: 1180px;
+  width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
-
-.brand {
-  font: 900 23px "Cinzel", serif;
-  color: var(--parchment);
-  text-decoration: none;
-  letter-spacing: 0.06em;
-}
-
-.brand span,
-.eyebrow,
-.title-block p,
-nav a.active {
-  color: var(--gold-light);
-}
-
-.title-block {
-  flex: 1;
+  padding: 0;
 }
 
 .eyebrow {
-  margin: 0 0 2px;
-  font: 700 11px "Special Elite", monospace;
+  margin: 0 0 10px;
+  color: var(--sh-orange);
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
 }
 
 .title-block h1 {
   margin: 0;
-  color: var(--parchment);
-  font: 900 clamp(22px, 4vw, 34px) "Cinzel", serif;
-  letter-spacing: 0.04em;
+  font: 500 clamp(28px, 3vw, 42px) "Playfair Display", Georgia, serif;
 }
 
 .title-block p:last-child {
-  margin: 3px 0 0;
-  font-size: 16px;
-}
-
-nav {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-nav a,
-nav button {
-  color: var(--parchment);
-  background: transparent;
-  border: 0;
-  font: 700 13px "Cinzel", serif;
-  text-decoration: none;
-  cursor: pointer;
+  margin: 10px 0 0;
+  color: #b4bbc2;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .page-shell {
-  width: min(1180px, calc(100% - 28px));
+  width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
   padding: 28px 0 42px;
 }
 
 .toast {
+  transition: opacity 0.4s ease;
   margin-bottom: 16px;
   padding: 12px 16px;
   border: 2px solid var(--gold);
@@ -114,6 +103,11 @@ nav button {
   background: var(--parchment-light);
   color: var(--ocean-deep);
   font-weight: 700;
+}
+
+.toast.is-dismissing {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .book-cover {
@@ -183,7 +177,7 @@ nav button {
   display: block;
   margin-bottom: 4px;
   color: var(--crimson);
-  font: 700 11px "Special Elite", monospace;
+  font: 700 11px "Inter", system-ui, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
@@ -194,8 +188,8 @@ nav button {
 .modal-card h2 {
   margin: 0;
   color: var(--ocean);
-  font-family: "Cinzel", serif;
-  font-weight: 900;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 500;
 }
 
 .readonly-badge,
@@ -206,7 +200,7 @@ nav button {
   align-items: center;
   width: fit-content;
   border-radius: 999px;
-  font: 700 12px "Special Elite", monospace;
+  font: 700 12px "Inter", system-ui, sans-serif;
 }
 
 .readonly-badge,
@@ -251,7 +245,7 @@ textarea {
 .ruled-box p {
   margin: 0;
   white-space: pre-line;
-  font-size: 20px;
+  font-size: 15px;
 }
 
 .empty-entry {
@@ -267,13 +261,13 @@ textarea {
 
 .empty-entry h3 {
   margin: 0 0 8px;
-  font: 900 24px "Cinzel", serif;
+  font: 500 24px "Playfair Display", Georgia, serif;
   color: var(--ocean);
 }
 
 .empty-entry p {
   margin: 0;
-  font-size: 19px;
+  font-size: 14px;
 }
 
 .page-foot {
@@ -284,7 +278,7 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   color: rgba(30, 36, 43, 0.72);
-  font: 700 12px "Special Elite", monospace;
+  font: 700 12px "Inter", system-ui, sans-serif;
 }
 
 .prompt-btn,
@@ -309,7 +303,7 @@ textarea {
   border-radius: 10px;
   background: var(--ocean);
   color: var(--parchment);
-  font: 800 12px "Cinzel", serif;
+  font: 600 12px "Inter", system-ui, sans-serif;
 }
 
 .prompt-box {
@@ -325,15 +319,15 @@ textarea {
 
 .prompt-box span {
   color: var(--crimson);
-  font: 700 10px "Special Elite", monospace;
+  font: 700 10px "Inter", system-ui, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
 
 .prompt-box p {
   margin: 3px 0 0;
-  font-size: 18px;
-  font-style: italic;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .prompt-box button {
@@ -343,7 +337,7 @@ textarea {
   border-radius: 8px;
   background: var(--parchment-light);
   color: var(--ocean);
-  font: 700 11px "Special Elite", monospace;
+  font: 700 11px "Inter", system-ui, sans-serif;
 }
 
 .journal-form,
@@ -359,14 +353,14 @@ textarea {
 label,
 .label-row span {
   color: var(--ocean);
-  font: 900 12px "Cinzel", serif;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font: 600 12px "Inter", system-ui, sans-serif;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .label-row span {
   color: rgba(30, 36, 43, 0.68);
-  font-family: "Special Elite", monospace;
+  font-family: "Inter", system-ui, sans-serif;
   text-transform: none;
 }
 
@@ -393,12 +387,12 @@ label,
 }
 
 .mood-card strong {
-  font: 900 13px "Cinzel", serif;
+  font: 600 13px "Inter", system-ui, sans-serif;
 }
 
 .mood-card span {
   margin-top: 4px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .mood-card.selected {
@@ -414,8 +408,9 @@ textarea {
   border-radius: 12px;
   background-color: rgba(250, 244, 228, 0.72);
   color: var(--ink);
-  font: 600 18px "Crimson Pro", serif;
+  font: 400 15px "Inter", system-ui, sans-serif;
   outline: none;
+  line-height: 2rem;
 }
 
 input[type="text"] {
@@ -445,7 +440,7 @@ textarea:focus {
   align-items: center;
   gap: 8px;
   color: var(--ink);
-  font: 700 16px "Crimson Pro", serif;
+  font: 400 12px "Inter", system-ui, sans-serif;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -461,7 +456,7 @@ textarea:focus {
   border-radius: 14px;
   background: var(--crimson);
   color: var(--parchment);
-  font: 900 12px "Cinzel", serif;
+  font: 600 12px "Inter", system-ui, sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   box-shadow: 0 8px 18px rgba(158, 42, 43, 0.28);
@@ -480,6 +475,14 @@ textarea:focus {
   border-radius: 20px;
   background: var(--parchment);
   box-shadow: 0 18px 35px rgba(0, 0, 0, 0.28);
+}
+
+.summary-empty {
+  margin: 0;
+  padding: 28px 18px;
+  color: var(--ocean);
+  font-size: 14px;
+  text-align: center;
 }
 
 .summary-head {
@@ -503,7 +506,7 @@ textarea:focus {
   padding: 7px 11px;
   border: 1px solid rgba(227, 185, 107, 0.7);
   border-radius: 999px;
-  font: 700 12px "Special Elite", monospace;
+  font: 700 12px "Inter", system-ui, sans-serif;
 }
 
 .table-wrap {
@@ -527,13 +530,13 @@ td {
 th {
   background: rgba(223, 207, 166, 0.8);
   color: var(--ocean);
-  font: 900 12px "Cinzel", serif;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font: 600 12px "Inter", system-ui, sans-serif;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 td {
-  font-size: 17px;
+  font-size: 14px;
 }
 
 .today-row {
@@ -561,7 +564,7 @@ td {
   border-radius: 10px;
   background: var(--ocean);
   color: var(--parchment);
-  font: 800 12px "Cinzel", serif;
+  font: 600 12px "Inter", system-ui, sans-serif;
 }
 
 .view-btn:disabled {
@@ -604,7 +607,7 @@ td {
   border-radius: 50%;
   background: var(--crimson);
   color: var(--parchment);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .modal-card h2 {
@@ -615,7 +618,7 @@ td {
 .modal-date {
   margin: 5px 0 14px;
   color: rgba(30, 36, 43, 0.7);
-  font: 700 13px "Special Elite", monospace;
+  font: 700 13px "Inter", system-ui, sans-serif;
 }
 
 .modal-body {
@@ -623,17 +626,12 @@ td {
   margin-top: 14px;
 }
 
-@media (max-width: 980px) {
-  .header-inner,
+@media (max-width: 1100px) {
   .page-head,
   .form-bottom,
   .summary-head {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  nav {
-    justify-content: flex-start;
   }
 
   .book-pages {
@@ -682,5 +680,398 @@ td {
 
   .prompt-box {
     display: grid;
+  }
+}
+
+/* Allow controls to wrap as the book narrows beside the shared sidebar. */
+.page-head,
+.form-bottom {
+  flex-wrap: wrap;
+}
+
+.paper {
+  min-width: 0;
+  padding: clamp(16px, 1.7vw, 28px);
+}
+
+.mood-grid {
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+}
+
+.journal-page button,
+.modal button {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.journal-page button:focus-visible,
+.modal button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .log-header {
+    margin-top: 0;
+  }
+
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+
+  .sidebar .logo {
+    width: 100%;
+    padding-bottom: 8px;
+  }
+
+  .sidebar a.nav {
+    padding: 8px 10px;
+  }
+
+  .sidebar .side-card {
+    display: none;
+  }
+
+  .journal-topbar .sh-topbar {
+    flex-wrap: wrap;
+  }
+
+  .header-inner,
+  .page-shell {
+    width: calc(100% - 28px);
+  }
+}
+
+/* Desktop workspace: the book and its summary share one screen. */
+@media (min-width: 1101px) {
+  .journal-page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-inner,
+  .page-shell {
+    width: calc(100% - 48px);
+    max-width: 1600px;
+  }
+
+  .page-shell {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px 0 24px;
+    position: relative;
+  }
+
+  .toast {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 5;
+  }
+
+  .book-cover {
+    min-height: 0;
+    padding: 10px;
+  }
+
+  .book-pages {
+    height: 100%;
+  }
+
+  .paper {
+    min-height: 0;
+    padding: clamp(12px, 1.1vw, 22px);
+    gap: 12px;
+  }
+
+  .page-head {
+    gap: 8px;
+    padding-bottom: 10px;
+  }
+
+  .page-head h2 {
+    font-size: clamp(18px, 1.3vw, 24px);
+  }
+
+  .empty-entry {
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .empty-entry h3 {
+    font-size: 22px;
+  }
+
+  .page-left > div:not(.page-head):not(.empty-entry) {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .ruled-box {
+    min-height: 0;
+  }
+
+  .prompt-box {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .prompt-box p {
+    font-size: 13px;
+  }
+
+  .journal-form {
+    flex: 1;
+    min-height: 0;
+    grid-template-rows: auto auto minmax(100px, 1fr) auto;
+    gap: 12px;
+  }
+
+  .journal-form .field {
+    min-height: 0;
+    gap: 6px;
+  }
+
+  .journal-form .field:has(textarea) {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .journal-form textarea {
+    height: 100%;
+    min-height: 0;
+    resize: none;
+  }
+
+  .mood-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .mood-card {
+    min-height: 48px;
+    padding: 7px;
+  }
+
+  .mood-card strong {
+    font-size: 11px;
+  }
+
+  .mood-card span {
+    font-size: 10px;
+  }
+
+  .form-bottom {
+    gap: 8px;
+  }
+
+  .save-btn {
+    padding: 10px 14px;
+  }
+
+  .summary-card {
+    min-width: 0;
+    margin-top: 0;
+    align-self: start;
+  }
+
+  .summary-head {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px;
+    gap: 10px;
+  }
+
+  .summary-head h2 {
+    font-size: 22px;
+  }
+
+  .summary-head p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .summary-card table,
+  .summary-card tbody,
+  .summary-card tr,
+  .summary-card td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .summary-card thead {
+    display: none;
+  }
+
+  .summary-card tr {
+    padding: 14px 18px;
+  }
+
+  .summary-card tr + tr {
+    border-top: 1px solid rgba(30, 36, 43, 0.16);
+  }
+
+  .summary-card td {
+    border: 0;
+    padding: 5px 0;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .summary-card td:nth-child(3)::before {
+    content: "Mood: ";
+    font-weight: 600;
+  }
+
+  .summary-card td:nth-child(4)::before {
+    content: "Title: ";
+    font-weight: 600;
+  }
+}
+
+@media (min-width: 1500px) and (min-height: 850px) {
+  .journal-form .mood-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.reflection-editor {
+  position: relative;
+  min-height: 0;
+}
+
+.reflection-editor textarea {
+  display: block;
+  height: 100%;
+  padding-bottom: 42px;
+}
+
+.note-cover {
+  display: none;
+  position: absolute;
+  inset: 0;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  border: 1px solid rgba(30, 36, 43, 0.22);
+  border-radius: 12px;
+  background: var(--parchment-light);
+  color: var(--ocean);
+  font-size: 14px;
+}
+
+.conceal-note {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.reflection-editor.is-concealed textarea {
+  visibility: hidden;
+}
+
+.reflection-editor.is-concealed .note-cover {
+  display: grid;
+}
+
+.reflection-editor.is-concealed .conceal-note {
+  display: none;
+}
+
+.journal-summary-column {
+  min-width: 0;
+  min-height: 0;
+}
+
+.history-open-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+  background: var(--ocean);
+  color: var(--parchment);
+  font: 500 14px "Inter", system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.history-open-btn i {
+  margin-right: 8px;
+}
+
+.history-panel {
+  width: min(720px, 100%);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.history-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.history-filter input {
+  padding: 8px;
+  min-width: 0;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: var(--parchment-light);
+  color: var(--ocean);
+  font: inherit;
+}
+
+.history-entry {
+  padding: 16px 0;
+  border-top: 1px solid rgba(30, 36, 43, 0.16);
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+
+.history-entry-head,
+.history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-entry h3 {
+  margin: 0;
+  color: var(--ocean);
+  font: 500 22px "Playfair Display", Georgia, serif;
+}
+
+.history-date {
+  color: #59606a;
+  font-size: 12px;
+}
+
+.history-pagination {
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+#entry-modal {
+  z-index: 21;
+}
+
+@media (min-width: 1101px) {
+  .journal-summary-column {
+    overflow-y: auto;
   }
 }
