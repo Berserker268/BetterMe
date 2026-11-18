@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" th:content="${_csrf.token}">
+  <meta name="csrf-header" th:content="${_csrf.headerName}">
+  <title>Social - BetterMe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/shell.css}">
+  <link rel="stylesheet" th:href="@{/css/social.css}">
+</head>
+<body class="social-body">
+<div class="app social-app">
+  <nav th:replace="~{fragments/shell :: sidebar('social')}"></nav>
+  <main class="social-main" id="social-main" th:data-user-name="${socialMe.name}" th:data-user-id="${socialMe.id}">
+    <div class="social-topbar"><div th:replace="~{fragments/shell :: topbar}"></div></div>
+    <header class="social-heading">
+      <div><p class="social-eyebrow">Shared milestones</p><h1>Social</h1></div>
+      <div class="social-mobile-tabs" role="group" aria-label="Social sections">
+        <button type="button" id="feed-tab" class="is-active" aria-pressed="true">Feed</button>
+        <button type="button" id="friends-tab" aria-pressed="false">Friends <span id="request-count">0</span></button>
+      </div>
+    </header>
+    <p id="social-notice" class="social-notice" role="status" hidden></p>
+    <div class="social-columns">
+      <section id="social-feed-column" aria-label="Friends feed">
+        <form id="post-form" class="social-card social-composer" enctype="multipart/form-data">
+          <div class="social-composer-top">
+            <span class="social-avatar" id="composer-avatar" aria-hidden="true"></span>
+            <div class="social-draft">
+              <label class="social-sr-only" for="post-text">Share a progress update</label>
+              <textarea id="post-text" name="text" rows="2" maxlength="2000" placeholder="Share a progress update" required></textarea>
+            </div>
+          </div>
+          <div id="photo-preview-wrap" class="social-photo-preview" hidden>
+            <img id="photo-preview" alt="Selected photo preview">
+            <button type="button" id="remove-photo" aria-label="Remove selected photo"><i class="bi bi-x-lg"></i></button>
+          </div>
+          <div class="social-composer-actions">
+            <input type="file" id="post-photo" name="photo" accept="image/jpeg,image/png" class="social-sr-only">
+            <button type="button" id="add-photo" class="social-text-button"><i class="bi bi-image"></i> Add photo</button>
+            <span class="social-privacy"><i class="bi bi-people"></i> Friends only</span>
+            <label class="social-sr-only" for="post-category">Optional category</label>
+            <select id="post-category" name="category" aria-label="Optional category">
+              <option value="">Category</option><option>Study</option><option>Fitness</option><option>Prayer</option>
+              <option>Habit</option><option>Skill</option><option>Other</option>
+            </select>
+            <button type="submit" class="social-primary" id="publish-post">Post</button>
+          </div>
+          <p class="social-hint">One JPEG or PNG, up to 2 MB. Only you and accepted friends can see your updates.</p>
+          <p id="post-error" class="social-error" role="alert" hidden></p>
+        </form>
+        <div id="feed-list" aria-live="polite"><p class="social-state">Loading your feed...</p></div>
+        <button type="button" id="feed-more" class="social-more" hidden>Load more updates</button>
+      </section>
+      <aside id="social-friends-column" aria-label="Manage friends">
+        <section class="social-card">
+          <h2>Friend requests <span class="social-count" id="incoming-total"></span></h2>
+          <div id="request-list" aria-live="polite"><p class="social-state">Loading requests...</p></div>
+          <button type="button" id="requests-more" class="social-more" hidden>Load more requests</button>
+        </section>
+        <section class="social-card">
+          <h2>Find People</h2>
+          <form id="search-form" class="social-search" role="search">
+            <label class="social-sr-only" for="friend-search">Search people by name</label>
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input id="friend-search" type="search" placeholder="Search by name" minlength="2" maxlength="80" autocomplete="off">
+            <button type="submit" aria-label="Search"><i class="bi bi-arrow-right"></i></button>
+          </form>
+          <div id="search-results" aria-live="polite"><p class="social-hint">Find the people you know.</p></div>
+          <button type="button" id="search-more" class="social-more" hidden>More results</button>
+        </section>
+        <section class="social-card">
+          <h2>Your friends <span class="social-count" id="friends-total"></span></h2>
+          <div id="friend-list" aria-live="polite"><p class="social-state">Loading friends...</p></div>
+          <button type="button" id="friends-more" class="social-more" hidden>Load more friends</button>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+<button type="button" class="social-chat-bubble" aria-label="Chat — coming soon" aria-disabled="true" title="Chat — coming soon">
+  <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>
+</button>
+<script th:src="@{/js/shell.js}"></script>
+<script th:src="@{/js/social.js}"></script>
+</body>
+</html>
