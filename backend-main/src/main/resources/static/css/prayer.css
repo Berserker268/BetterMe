@@ -1,0 +1,82 @@
+/* Prayer page. Matches the social page: shared shell, dark cards, warm accent. */
+* { box-sizing: border-box; }
+.prayer-body { margin: 0; background: #0c1519; color: #f3ede8; font-family: var(--sh-sans); }
+.prayer-main {
+  --pr-surface: #162127; --pr-line: #3a3534; --pr-accent: #cf9d7b; --pr-input: #1c292f; --pr-edge: #54595b;
+  --pr-muted: #b2b7b7; --pr-bead-off: #2c3a41;
+  flex: 1; min-width: 0; padding: 1rem 1.6rem 3rem;
+}
+.prayer-main [hidden] { display: none !important; }
+.prayer-topbar { margin-bottom: 0.4rem; }
+.prayer-heading, .prayer-card, .prayer-columns { max-width: 1100px; margin-left: auto; margin-right: auto; }
+.prayer-heading { margin-bottom: 1.5rem; }
+.prayer-eyebrow { margin: 0 0 0.45rem; color: var(--pr-accent); text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.68rem; font-weight: 600; }
+.prayer-heading h1 { margin: 0; font: 400 2.8rem 'Anton', 'Impact', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; }
+.prayer-sub { margin: 0.5rem 0 0; color: var(--pr-muted); font-size: 0.9rem; }
+
+.prayer-card { background: var(--pr-surface); border: 1px solid var(--pr-line); border-radius: 1rem; padding: 1.2rem; margin-bottom: 1rem; }
+.prayer-card h2 { margin: 0; font: 400 1.35rem 'Anton', 'Impact', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; }
+.prayer-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 1.2rem; align-items: start; }
+.prayer-columns > .prayer-card { max-width: none; margin: 0; }
+
+.prayer-main button, .prayer-main input, .prayer-main select { font: inherit; }
+.prayer-main button { cursor: pointer; }
+.prayer-main button:disabled { cursor: default; opacity: 0.5; }
+.prayer-main button:focus-visible, .prayer-main input:focus-visible, .prayer-main select:focus-visible { outline: 2px solid var(--pr-accent); outline-offset: 3px; }
+
+.prayer-where { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.9rem; align-items: end; }
+.prayer-where label { display: grid; gap: 0.35rem; font-size: 0.75rem; color: var(--pr-muted); }
+.prayer-where input, .prayer-where select { width: 100%; padding: 0.6rem 0.7rem; border: 1px solid var(--pr-edge); border-radius: 0.65rem; background: var(--pr-input); color: #f3ede8; font-size: 0.9rem; }
+
+.prayer-primary, .prayer-secondary { border-radius: 0.6rem; padding: 0.55rem 1rem; border: 1px solid transparent; line-height: 1.3; }
+.prayer-primary { background: var(--pr-accent); color: #151719; font-weight: 600 !important; }
+.prayer-primary:hover { background: #dfaf8e; }
+.prayer-secondary { background: transparent; color: #f3ede8; border-color: #626969; font-size: 0.85rem; }
+.prayer-secondary:hover { background: #253037; }
+.prayer-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.2rem; height: 2.2rem; border: 1px solid #626969; border-radius: 0.6rem; background: transparent; color: #f3ede8; }
+.prayer-icon:hover:not(:disabled) { background: #253037; }
+
+.prayer-notice { max-width: 1100px; margin: 0 auto 1rem; padding: 0.8rem 1rem; background: #31463f; border: 1px solid #6b8a7c; border-radius: 0.7rem; font-size: 0.85rem; }
+.prayer-notice.is-error { background: #3f2b2a; border-color: #8a5a55; color: #ffb4a5; }
+.prayer-warn { margin: 1rem 0 0; padding: 0.8rem 1rem; background: #3b2a1e; border: 1px solid #b8764f; border-radius: 0.7rem; color: #e8955a; font-size: 0.85rem; line-height: 1.6; }
+.prayer-hint { color: #aaaead; font-size: 0.72rem; line-height: 1.7; margin: 0.8rem 0 0; }
+
+.prayer-datebar { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.prayer-datebar h2 { flex: 1 1 12rem; min-width: 0; font-size: 1.15rem; }
+
+.prayer-list { list-style: none; margin: 1rem 0 0; padding: 0; border-top: 1px solid var(--pr-line); }
+.pr-row { display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: center; padding: 0.9rem 0.2rem; border-bottom: 1px solid var(--pr-line); }
+.pr-name { font-weight: 600; font-size: 1rem; }
+.pr-time { font-variant-numeric: tabular-nums; color: var(--pr-muted); font-size: 0.95rem; }
+.pr-row.is-next .pr-time { color: #f3ede8; font-weight: 600; }
+.pr-tag { margin-left: 0.5rem; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.2rem 0.6rem; border-radius: 999px; background: #4a3930; color: #ecd5c3; }
+.pr-toggle { min-width: 10.5rem; padding: 0.5rem 0.9rem; border-radius: 0.6rem; border: 1px solid #626969; background: transparent; color: #f3ede8; text-align: left; font-size: 0.85rem; }
+.pr-toggle:hover:not(:disabled) { background: #253037; }
+.pr-row.is-done .pr-toggle { background: #31463f; border-color: #6b8a7c; color: #d9efe4; font-weight: 600; }
+.pr-toggle i { margin-right: 0.35rem; }
+
+.prayer-progress { margin-top: 1.2rem; }
+.prayer-progress-text { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+.prayer-bar { height: 0.6rem; border-radius: 999px; background: var(--pr-bead-off); overflow: hidden; }
+.prayer-bar span { display: block; width: 0; height: 100%; background: var(--pr-accent); border-radius: inherit; }
+
+/* Each day is a column of five beads, one per prayer. */
+.prayer-beads { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.35rem; margin-top: 1rem; }
+.pr-col { display: grid; justify-items: center; gap: 0.4rem; padding: 0.7rem 0 0.55rem; border-radius: 0.7rem; }
+.pr-col.is-today { background: #1c292f; border: 1px solid var(--pr-line); }
+.pr-bead-stack { display: grid; gap: 0.35rem; }
+.pr-bead { width: 0.9rem; height: 0.9rem; border-radius: 50%; background: var(--pr-bead-off); }
+.pr-bead.on { background: var(--pr-accent); }
+.pr-col-label { font-size: 0.7rem; color: var(--pr-muted); }
+.pr-col-count { font-size: 0.7rem; font-variant-numeric: tabular-nums; }
+
+.prayer-facts { display: grid; grid-template-columns: repeat(3, auto); justify-content: space-between; gap: 0.8rem; margin: 1.2rem 0 0; }
+.prayer-facts dt { font-size: 0.7rem; color: var(--pr-muted); }
+.prayer-facts dd { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight: 600; }
+
+@media (max-width: 900px) { .prayer-columns { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .pr-row { grid-template-columns: 1fr auto; }
+  .pr-toggle { grid-column: 1 / -1; width: 100%; }
+  .prayer-heading h1 { font-size: 2.2rem; }
+}
