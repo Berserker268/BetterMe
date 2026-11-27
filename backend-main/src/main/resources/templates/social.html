@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" th:href="@{/css/shell.css}">
   <link rel="stylesheet" th:href="@{/css/social.css(v=presence-1)}">
+  <link rel="stylesheet" th:href="@{/css/chat.css(v=1)}">
 </head>
 <body class="social-body">
 <div class="app social-app">
@@ -83,10 +84,58 @@
     </div>
   </main>
 </div>
-<button type="button" class="social-chat-bubble" aria-label="Chat — coming soon" aria-disabled="true" title="Chat — coming soon">
+<button type="button" class="social-chat-bubble" id="chat-toggle" aria-label="Open chats" aria-expanded="false" aria-controls="chat-panel" title="Chats">
   <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>
+  <span id="chat-unread-badge" class="chat-badge" hidden>0</span>
 </button>
+<aside id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-panel-title" hidden>
+  <header class="chat-header">
+    <button type="button" id="chat-back" class="chat-icon" aria-label="Back to chats" hidden><i class="bi bi-arrow-left" aria-hidden="true"></i></button>
+    <div class="chat-title-wrap"><h2 id="chat-panel-title">Chats</h2><span id="chat-subtitle" class="chat-subtitle">Your circle, one message away.</span></div>
+    <button type="button" id="chat-new" class="chat-icon" aria-label="New message" title="New message"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+    <button type="button" id="chat-new-group" class="chat-icon" aria-label="Create group" title="Create group"><i class="bi bi-people" aria-hidden="true"></i></button>
+    <button type="button" id="chat-close" class="chat-icon" aria-label="Close chats"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+  </header>
+  <p id="chat-connection" class="chat-connection" role="status">Connecting...</p>
+  <p id="chat-error" class="chat-error" role="alert" hidden></p>
+  <section id="chat-inbox" class="chat-view">
+    <label class="chat-search"><i class="bi bi-search" aria-hidden="true"></i><input id="chat-search" type="search" maxlength="80" placeholder="Search friends" aria-label="Search friends"></label>
+    <div id="chat-filters" class="chat-filters" role="group" aria-label="Filter chats">
+      <button type="button" data-chat-filter="all" class="is-active" aria-pressed="true">All</button>
+      <button type="button" data-chat-filter="unread" aria-pressed="false">Unread</button>
+      <button type="button" data-chat-filter="groups" aria-pressed="false">Groups</button>
+    </div>
+    <div id="chat-list" class="chat-list" aria-live="polite"></div>
+    <button type="button" id="chat-list-more" class="chat-more" hidden>Load more</button>
+    <button type="button" id="chat-find-friends" class="chat-footer-button">Start a conversation</button>
+  </section>
+  <section id="chat-thread" class="chat-view" hidden>
+    <details id="chat-members" class="chat-members" hidden><summary>Group members</summary><div id="chat-member-list"></div></details>
+    <button type="button" id="chat-history-more" class="chat-more" hidden>Load earlier messages</button>
+    <div id="chat-messages" class="chat-messages" role="log" aria-label="Messages" aria-live="polite"></div>
+    <form id="chat-message-form" class="chat-message-form">
+      <label class="social-sr-only" for="chat-message">Message</label>
+      <textarea id="chat-message" rows="2" maxlength="2000" placeholder="Write a message..." required></textarea>
+      <button type="submit" id="chat-send" class="chat-send" aria-label="Send message"><i class="bi bi-send-fill" aria-hidden="true"></i></button>
+      <span class="chat-input-hint">Enter to send · Shift+Enter for a new line</span>
+    </form>
+  </section>
+  <section id="chat-group" class="chat-view" hidden>
+    <form id="chat-group-form" class="chat-group-form">
+      <label for="chat-group-name">Group name</label>
+      <input id="chat-group-name" maxlength="80" placeholder="e.g. Study circle" required>
+      <label for="chat-group-search">Add friends</label>
+      <input id="chat-group-search" type="search" maxlength="80" placeholder="Search your friends">
+      <div id="chat-selected-members" class="chat-selected" aria-live="polite"></div>
+      <p class="chat-group-hint">Choose at least two friends. Only group members can read its messages.</p>
+      <div id="chat-group-friends" class="chat-list"></div>
+      <button type="button" id="chat-group-more" class="chat-more" hidden>Load more friends</button>
+      <button type="submit" id="chat-create-group" class="chat-create">Create group</button>
+    </form>
+  </section>
+</aside>
 <script th:src="@{/js/shell.js(v=presence-1)}"></script>
 <script th:src="@{/js/social.js(v=live-1)}"></script>
+<script th:src="@{/js/chat.js(v=1)}"></script>
 </body>
 </html>
