@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" th:content="${_csrf.token}">
+  <meta name="csrf-header" th:content="${_csrf.headerName}">
+  <title>Prayer - BetterMe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/shell.css}">
+  <link rel="stylesheet" th:href="@{/css/prayer.css}">
+</head>
+<body class="prayer-body">
+<div class="app prayer-app">
+  <nav th:replace="~{fragments/shell :: sidebar('prayer')}"></nav>
+  <main class="prayer-main">
+    <div class="prayer-topbar"><div th:replace="~{fragments/shell :: topbar}"></div></div>
+
+    <header class="prayer-heading">
+      <p class="prayer-eyebrow">Daily practice</p>
+      <h1>Prayer</h1>
+      <p id="prWhere" class="prayer-sub"></p>
+    </header>
+
+    <p id="prMessage" class="prayer-notice" role="status" hidden></p>
+
+    <section class="prayer-card">
+      <form id="prLocation" class="prayer-where" autocomplete="off">
+        <label>City
+          <input id="prCity" maxlength="80" th:value="${prayerDefaults.city()}" required>
+        </label>
+        <label>Country
+          <input id="prCountry" maxlength="80" th:value="${prayerDefaults.country()}" required>
+        </label>
+        <label>Calculation method
+          <select id="prMethod">
+            <option th:each="m : ${prayerDefaults.methods()}" th:value="${m.id()}" th:text="${m.name()}"
+                    th:selected="${m.id() == prayerDefaults.method()}"></option>
+          </select>
+        </label>
+        <label>Asr
+          <select id="prSchool">
+            <option value="0" th:selected="${prayerDefaults.school() == 0}">Standard (Shafi'i, Maliki, Hanbali)</option>
+            <option value="1" th:selected="${prayerDefaults.school() == 1}">Hanafi</option>
+          </select>
+        </label>
+        <button type="submit" class="prayer-primary">Update times</button>
+      </form>
+    </section>
+
+    <div class="prayer-columns">
+      <section class="prayer-card" aria-labelledby="prDateLabel">
+        <div class="prayer-datebar">
+          <button type="button" id="prPrev" class="prayer-icon" aria-label="Previous day"><i class="bi bi-chevron-left"></i></button>
+          <h2 id="prDateLabel">Loading...</h2>
+          <button type="button" id="prNext" class="prayer-icon" aria-label="Next day"><i class="bi bi-chevron-right"></i></button>
+          <button type="button" id="prToday" class="prayer-secondary">Today</button>
+        </div>
+
+        <p id="prUnavailable" class="prayer-warn" role="alert" hidden></p>
+        <p id="prMethodNote" class="prayer-hint"></p>
+
+        <ul id="prList" class="prayer-list"></ul>
+
+        <div class="prayer-progress">
+          <div class="prayer-progress-text"><strong id="prCount">0/5 marked</strong><span id="prPercent">0%</span></div>
+          <div class="prayer-bar" role="progressbar" aria-label="Prayers marked today" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="prBar"><span id="prBarFill"></span></div>
+        </div>
+      </section>
+
+      <aside class="prayer-card" aria-labelledby="prTrendTitle">
+        <h2 id="prTrendTitle">Last 7 days</h2>
+        <div id="prBeads" class="prayer-beads"></div>
+        <p id="prEmpty" class="prayer-hint" hidden>Nothing logged in the last 30 days yet. Mark a prayer and it will show up here.</p>
+        <dl class="prayer-facts">
+          <div><dt>7-day total</dt><dd id="prWeek">-</dd></div>
+          <div><dt>30-day total</dt><dd id="prMonth">-</dd></div>
+          <div><dt>Streak</dt><dd id="prStreak">-</dd></div>
+        </dl>
+        <p class="prayer-hint">Totals include today, even if it isn't finished. A streak is consecutive days with all five marked.
+          Days you haven't logged show as not logged, not as missed.</p>
+      </aside>
+    </div>
+  </main>
+</div>
+<script th:src="@{/js/shell.js}"></script>
+<script th:src="@{/js/prayer.js}"></script>
+</body>
+</html>
