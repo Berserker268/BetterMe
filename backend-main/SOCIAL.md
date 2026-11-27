@@ -1,5 +1,36 @@
 # Friends & Social Feed
 
+## Chat
+
+The chat bubble opens a right-side panel on Social. Search accepted friends and
+select a name to open a one-to-one conversation. Use the group icon to create
+a named circle with 2–49 friends (up to 50 people including the creator).
+Groups can be used for challenges; there is no challenge feature integration yet.
+
+Chat lives in `com.betterme.chat` with controller, service, repository, model,
+and DTO packages. The next normal app startup creates `chat_conversations`,
+`chat_members`, and `chat_messages` through the existing JPA schema update.
+No new runtime dependencies or external messaging credentials are required.
+
+Messages are stored before server-sent events notify the conversation members.
+The browser then fetches authorized message data. Streams reconnect, with a
+15-second recovery refresh for missed events and separate app instances. Live
+event fan-out is in memory for one application instance; a distributed deployment
+would need shared event delivery for immediate updates across instances.
+
+History loads 30 messages at a time. Message UUIDs make retries idempotent.
+Unread counts track messages from other members beyond each user's saved read
+position. The UI marks a chat read only while it is open, visible, and scrolled
+to the latest message. Closing the panel or switching tabs preserves drafts.
+Only accepted friends can open direct chats; group history and live event
+subscriptions are restricted to members and authenticated sessions.
+
+Manual checks: use two signed-in accounts to search/open a direct chat, exchange
+messages without refreshing, close/reopen the panel to check unread counts, and
+load earlier history. With a third accepted friend, create a group and verify
+messages arrive for all members. An unrelated account must not access its
+conversation or message URLs. Builds and tests have not been run for this feature.
+
 Open `/social` from the existing sidebar. The page uses the shared shell, Inter,
 Playfair Display, and dark cards with warm accents. On narrow screens, use the
 Feed and Friends buttons to switch columns.
