@@ -8,6 +8,14 @@ import org.springframework.data.jpa.repository.*;
 import java.util.*;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
+    @Query("""
+        select case when f.lowUser.id = :viewer then f.highUser.id else f.lowUser.id end
+        from Friendship f where f.accepted = true and
+        ((f.lowUser.id = :viewer and f.highUser.email in :emails) or
+         (f.highUser.id = :viewer and f.lowUser.email in :emails))
+        """)
+    List<Long> onlineFriends(Long viewer, Set<String> emails);
+
     Optional<Friendship> findByLowUserIdAndHighUserId(Long low, Long high);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

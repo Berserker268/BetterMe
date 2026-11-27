@@ -12,6 +12,7 @@
   });
   let photoUrl, noticeTimer, feedPage = 0, requestPage = 0, friendPage = 0, searchPage = 0;
   let searchQuery = '', searchVersion = 0, searchTimer;
+  let activeActions = 0, pendingLoads = 0, uiRevision = 0;
 
   function el(tag, className, text) {
     const node = document.createElement(tag);
@@ -66,8 +67,9 @@
     container.append(box);
   }
   async function busy(node, action, onError) {
+    activeActions++; uiRevision++;
     node.disabled = true;
-    try { await action(); } catch (error) { onError(error); } finally { node.disabled = false; }
+    try { await action(); } catch (error) { onError(error); } finally { node.disabled = false; activeActions--; uiRevision++; }
   }
 
   $('composer-avatar').replaceWith(Object.assign(avatar(me), { id: 'composer-avatar' }));
@@ -111,6 +113,8 @@
   const categoryIcons = { Study: 'book', Fitness: 'activity', Prayer: 'moon-stars', Habit: 'repeat', Skill: 'lightbulb', Other: 'flag' };
   function postCard(post) {
     const card = el('article', 'social-card social-post');
+    card.dataset.postId = String(post.id);
+    card.dataset.createdAt = post.createdAt;
     const head = el('header', 'social-post-head');
     const author = el('div', 'social-post-author');
     author.append(el('strong', 'social-post-name', post.author.name));
@@ -376,16 +380,28 @@
     thread.append(list, more, form, commentError);
     actions.append(like, commentButton);
     card.append(actions, error, thread);
+    card.refreshPost = next => {
+      post.likes = next.likes;
+      post.liked = next.liked;
+      post.comments = next.comments;
+      updateLike();
+      updateCommentCount();
+    };
     return card;
   }
 
   async function loadFeed(page) {
+    pendingLoads++; uiRevision++;
     $('feed-more').disabled = true;
     if (page === 0) $('feed-list').replaceChildren(el('p', 'social-state', 'Loading your feed...'));
     try {
       const result = await api(`/feed?page=${page}`);
       if (page === 0) $('feed-list').replaceChildren();
-      result.items.forEach(post => $('feed-list').append(postCard(post)));
+      result.items.forEach(post => {
+        const existing = $('feed-list').querySelector(`[data-post-id="${post.id}"]`);
+        if (existing) existing.refreshPost(post);
+        else $('feed-list').append(postCard(post));
+      });
       if (page === 0 && !result.items.length) {
         const empty = el('div', 'social-card social-empty');
         empty.append(icon('people'), el('h2', '', 'Small wins are better together'), el('p', 'social-state', 'Share your first update or add a friend to see their progress here.'));
@@ -393,7 +409,7 @@
       }
       feedPage = result.page; $('feed-more').hidden = !result.hasNext;
     } catch (failure) { retry($('feed-list'), failure, () => loadFeed(page), page > 0); }
-    finally { $('feed-more').disabled = false; }
+    finally { $('feed-more').disabled = false; pendingLoads--; }
   }
   $('feed-more').addEventListener('click', () => loadFeed(feedPage + 1));
 
@@ -403,6 +419,37 @@
     info.append(el('div', 'social-person-name', person.name));
     row.append(avatar(person), info);
     return { row, info };
+  }
+  function requestRow(request) {
+    const { row, info } = personRow(request.person);
+    friendAction(info, 'Accept', () => api(`/requests/${request.id}/accept`, { method: 'POST' }));
+    friendAction(info, 'Decline', () => api(`/requests/${request.id}/decline`, { method: 'POST' }), true);
+    return liveRow(row, request);
+  }
+  function friendRow(person) {
+    const { row, info } = personRow(person);
+    row.dataset.friendId = String(person.id);
+    const dot = el('span', 'social-online-dot');
+    dot.hidden = !person.online;
+    dot.title = 'Online';
+    dot.setAttribute('role', 'img');
+    dot.setAttribute('aria-label', 'Online');
+    info.querySelector('.social-person-name').append(dot);
+    return liveRow(row, person);
+  }
+  function searchRow(person) {
+    const { row, info } = personRow(person);
+    if (person.state === 'NONE') friendAction(info, 'Add friend', () => api(`/requests/${person.id}`, { method: 'POST' }));
+    else if (person.state === 'INCOMING') {
+      friendAction(info, 'Accept request', () => api(`/requests/${person.requestId}/accept`, { method: 'POST' }));
+      friendAction(info, 'Decline', () => api(`/requests/${person.requestId}/decline`, { method: 'POST' }), true);
+    } else info.append(el('p', 'social-person-state', person.state === 'FRIENDS' ? 'Friends' : 'Request sent'));
+    return liveRow(row, person);
+  }
+  function liveRow(row, data) {
+    row.dataset.liveKey = String(data.id);
+    row.dataset.liveValue = JSON.stringify(data);
+    return row;
   }
   function friendAction(info, text, action, secondary = false) {
     let actions = info.querySelector('.social-person-actions');
@@ -425,67 +472,58 @@
     actions.append(control);
   }
   async function loadRequests(page) {
+    pendingLoads++; uiRevision++;
     $('requests-more').disabled = true;
     try {
       const result = await api(`/requests?page=${page}`);
       if (page === 0) $('request-list').replaceChildren();
-      result.items.forEach(request => {
-        const { row, info } = personRow(request.person);
-        friendAction(info, 'Accept', () => api(`/requests/${request.id}/accept`, { method: 'POST' }));
-        friendAction(info, 'Decline', () => api(`/requests/${request.id}/decline`, { method: 'POST' }), true);
-        $('request-list').append(row);
-      });
+      result.items.forEach(request => $('request-list').append(requestRow(request)));
       if (page === 0 && !result.items.length) $('request-list').append(el('p', 'social-state', 'No pending requests.'));
       $('request-count').textContent = String(result.total);
       $('incoming-total').textContent = result.total ? `(${result.total})` : '';
       requestPage = result.page; $('requests-more').hidden = !result.hasNext;
     } catch (failure) { retry($('request-list'), failure, () => loadRequests(page), page > 0); }
-    finally { $('requests-more').disabled = false; }
+    finally { $('requests-more').disabled = false; pendingLoads--; }
   }
   async function loadFriends(page) {
+    pendingLoads++; uiRevision++;
     $('friends-more').disabled = true;
     try {
       const result = await api(`/friends?page=${page}`);
       if (page === 0) $('friend-list').replaceChildren();
-      result.items.forEach(person => $('friend-list').append(personRow(person).row));
+      result.items.forEach(person => $('friend-list').append(friendRow(person)));
       if (page === 0 && !result.items.length) $('friend-list').append(el('p', 'social-state', 'Your circle starts here. Add a new Friend by searching them up.'));
       $('friends-total').textContent = `(${result.total})`;
       friendPage = result.page; $('friends-more').hidden = !result.hasNext;
     } catch (failure) { retry($('friend-list'), failure, () => loadFriends(page), page > 0); }
-    finally { $('friends-more').disabled = false; }
+    finally { $('friends-more').disabled = false; pendingLoads--; }
   }
   $('requests-more').addEventListener('click', () => loadRequests(requestPage + 1));
   $('friends-more').addEventListener('click', () => loadFriends(friendPage + 1));
 
   async function loadSearch(page) {
+    uiRevision++;
     const version = ++searchVersion;
     if (searchQuery.length < 2) {
       $('search-results').replaceChildren(el('p', 'social-hint', 'Enter at least 2 characters to search by name.'));
       $('search-more').hidden = true; return;
     }
+    pendingLoads++;
     $('search-more').disabled = true;
     if (page === 0) $('search-results').replaceChildren(el('p', 'social-state', 'Searching...'));
     try {
       const result = await api(`/people?q=${encodeURIComponent(searchQuery)}&page=${page}`);
       if (version !== searchVersion) return;
       if (page === 0) $('search-results').replaceChildren();
-      result.items.forEach(person => {
-        const { row, info } = personRow(person);
-        if (person.state === 'NONE') friendAction(info, 'Add friend', () => api(`/requests/${person.id}`, { method: 'POST' }));
-        else if (person.state === 'INCOMING') {
-          friendAction(info, 'Accept request', () => api(`/requests/${person.requestId}/accept`, { method: 'POST' }));
-          friendAction(info, 'Decline', () => api(`/requests/${person.requestId}/decline`, { method: 'POST' }), true);
-        } else info.append(el('p', 'social-person-state', person.state === 'FRIENDS' ? 'Friends' : 'Request sent'));
-        $('search-results').append(row);
-      });
+      result.items.forEach(person => $('search-results').append(searchRow(person)));
       if (page === 0 && !result.items.length) $('search-results').append(el('p', 'social-state', 'No people found. Try another name.'));
       searchPage = result.page; $('search-more').hidden = !result.hasNext;
     } catch (failure) { if (version === searchVersion) retry($('search-results'), failure, () => loadSearch(page), page > 0); }
-    finally { if (version === searchVersion) $('search-more').disabled = false; }
+    finally { if (version === searchVersion) $('search-more').disabled = false; pendingLoads--; }
   }
   function startSearch() { clearTimeout(searchTimer); searchQuery = $('friend-search').value.trim(); loadSearch(0); }
   $('search-form').addEventListener('submit', event => { event.preventDefault(); startSearch(); });
-  $('friend-search').addEventListener('input', () => { ++searchVersion; clearTimeout(searchTimer); searchTimer = setTimeout(startSearch, 300); });
+  $('friend-search').addEventListener('input', () => { ++searchVersion; uiRevision++; clearTimeout(searchTimer); searchTimer = setTimeout(startSearch, 300); });
   $('search-more').addEventListener('click', () => loadSearch(searchPage + 1));
   function showFriends(show) {
     main.classList.toggle('show-friends', show);
@@ -495,5 +533,121 @@
   }
   $('friends-tab').addEventListener('click', () => showFriends(true));
   $('feed-tab').addEventListener('click', () => { showFriends(false); loadFeed(0); });
-  Promise.all([loadFeed(0), loadRequests(0), loadFriends(0)]);
+  // Refresh in the background without replacing post cards or active drafts.
+  let livePending = false;
+  async function loadedPages(path, lastPage) {
+    const pages = [];
+    for (let page = 0; page <= lastPage; page++) {
+      const result = await api(`${path}${path.includes('?') ? '&' : '?'}page=${page}`);
+      pages.push(result);
+      if (!result.hasNext) break;
+    }
+    return pages;
+  }
+  function reconcileRows(container, items, makeRow, emptyText) {
+    const previous = new Map(Array.from(container.children)
+      .filter(node => node.dataset.liveKey).map(node => [node.dataset.liveKey, node]));
+    const keep = new Set();
+    let cursor = container.firstElementChild;
+    for (const item of items) {
+      const id = String(item.id);
+      if (keep.has(id)) continue;
+      keep.add(id);
+      let row = previous.get(id);
+      if (!row || row.dataset.liveValue !== JSON.stringify(item)) {
+        const replacement = makeRow(item);
+        if (row) {
+          if (cursor === row) cursor = replacement;
+          row.replaceWith(replacement);
+        }
+        row = replacement;
+      }
+      if (row !== cursor) container.insertBefore(row, cursor);
+      cursor = row.nextElementSibling;
+    }
+    Array.from(container.children).forEach(node => {
+      if (!keep.has(node.dataset.liveKey)) node.remove();
+    });
+    if (!items.length) container.append(el('p', 'social-state', emptyText));
+  }
+  function reconcileFeed(pages) {
+    const container = $('feed-list');
+    const items = pages.flatMap(page => page.items);
+    const existing = new Map(Array.from(container.querySelectorAll('[data-post-id]'))
+      .map(card => [card.dataset.postId, card]));
+    container.querySelectorAll(':scope > :not([data-post-id])').forEach(node => node.remove());
+    let cursor = container.firstElementChild;
+    const keep = new Set();
+    items.forEach(post => {
+      const id = String(post.id);
+      if (keep.has(id)) return;
+      keep.add(id);
+      const card = existing.get(id) || postCard(post);
+      card.refreshPost(post);
+      if (card !== cursor) container.insertBefore(card, cursor);
+      cursor = card.nextElementSibling;
+    });
+    const last = pages[pages.length - 1];
+    const oldest = items[items.length - 1];
+    existing.forEach((card, id) => {
+      // Keep older loaded cards pushed beyond the refreshed window by new posts.
+      const insideWindow = oldest && (card.dataset.createdAt > oldest.createdAt ||
+        (card.dataset.createdAt === oldest.createdAt && Number(id) >= oldest.id));
+      if (!keep.has(id) && (!last.hasNext || insideWindow)) card.remove();
+    });
+    if (!container.querySelector('[data-post-id]')) {
+      const empty = el('div', 'social-card social-empty');
+      empty.append(icon('people'), el('h2', '', 'Small wins are better together'),
+        el('p', 'social-state', 'Share your first update or add a friend to see their progress here.'));
+      container.append(empty);
+    }
+    feedPage = last.page;
+    $('feed-more').hidden = !last.hasNext;
+  }
+  async function refreshSocial() {
+    if (document.hidden || livePending || activeActions || pendingLoads) return;
+    livePending = true;
+    const revision = uiRevision;
+    const query = searchQuery;
+    try {
+      const results = await Promise.allSettled([
+        loadedPages('/feed', feedPage),
+        loadedPages('/requests', requestPage),
+        loadedPages('/friends', friendPage),
+        query.length >= 2 ? loadedPages(`/people?q=${encodeURIComponent(query)}`, searchPage) : Promise.resolve(null)
+      ]);
+      if (revision !== uiRevision || activeActions || pendingLoads || document.hidden) return;
+      const anchor = window.scrollY > 0 ? Array.from($('feed-list').querySelectorAll('[data-post-id]'))
+        .find(card => card.getBoundingClientRect().bottom > 0 && card.getBoundingClientRect().top < window.innerHeight) : null;
+      const anchorTop = anchor?.getBoundingClientRect().top;
+      const [feed, requests, friends, search] = results;
+      if (feed.status === 'fulfilled') reconcileFeed(feed.value);
+      if (requests.status === 'fulfilled') {
+        const pages = requests.value, last = pages[pages.length - 1];
+        reconcileRows($('request-list'), pages.flatMap(page => page.items), requestRow, 'No pending requests.');
+        $('request-count').textContent = String(pages[0].total);
+        $('incoming-total').textContent = pages[0].total ? `(${pages[0].total})` : '';
+        requestPage = last.page; $('requests-more').hidden = !last.hasNext;
+      }
+      if (friends.status === 'fulfilled') {
+        const pages = friends.value, last = pages[pages.length - 1];
+        reconcileRows($('friend-list'), pages.flatMap(page => page.items), friendRow,
+          'Your circle starts here. Add a new Friend by searching them up.');
+        $('friends-total').textContent = `(${pages[0].total})`;
+        friendPage = last.page; $('friends-more').hidden = !last.hasNext;
+      }
+      if (search.status === 'fulfilled' && search.value) {
+        const pages = search.value, last = pages[pages.length - 1];
+        reconcileRows($('search-results'), pages.flatMap(page => page.items), searchRow, 'No people found. Try another name.');
+        searchPage = last.page; $('search-more').hidden = !last.hasNext;
+      }
+      if (anchor?.isConnected) window.scrollBy(0, anchor.getBoundingClientRect().top - anchorTop);
+      // A failed background request leaves the current content intact and retries next time.
+    } finally { livePending = false; }
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshSocial(); });
+  window.addEventListener('online', refreshSocial);
+  Promise.all([loadFeed(0), loadRequests(0), loadFriends(0)]).then(() => {
+    window.setInterval(refreshSocial, 5000);
+  });
 })();

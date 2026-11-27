@@ -7,6 +7,7 @@ import java.util.List;
 public final class SocialViews {
     private SocialViews() {}
     public record Person(Long id, String name) {}
+    public record Friend(Long id, String name, boolean online) {}
     public record SearchPerson(Long id, String name, String state, Long requestId) {}
     public record Request(Long id, Person person) {}
     public record Post(Long id, Person author, String text, String category, Instant createdAt,

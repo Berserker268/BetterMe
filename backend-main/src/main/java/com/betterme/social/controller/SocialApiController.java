@@ -52,8 +52,13 @@ public class SocialApiController {
     }
 
     @GetMapping("/friends")
-    public PageView<Person> friends(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page) {
+    public PageView<Friend> friends(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page) {
         return social.friends(auth.getName(), page);
+    }
+
+    @GetMapping("/friends/online")
+    public java.util.List<Long> onlineFriends(Authentication auth) {
+        return social.onlineFriends(auth.getName());
     }
 
     @GetMapping("/requests")

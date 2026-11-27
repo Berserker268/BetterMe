@@ -40,11 +40,12 @@ public class SocialService {
     private final CommentLikeRepository commentLikes;
     private final HiddenPostRepository hiddenPosts;
     private final EntityManager entityManager;
+    private final PresenceService presence;
 
     public SocialService(UserRepository users, FriendshipRepository friendships, SocialPostRepository posts,
                          SocialPhotoRepository photos, SocialLikeRepository likes,
                          SocialCommentRepository comments, CommentLikeRepository commentLikes,
-                         HiddenPostRepository hiddenPosts, EntityManager entityManager) {
+                         HiddenPostRepository hiddenPosts, EntityManager entityManager, PresenceService presence) {
         this.users = users;
         this.friendships = friendships;
         this.posts = posts;
@@ -54,6 +55,7 @@ public class SocialService {
         this.commentLikes = commentLikes;
         this.hiddenPosts = hiddenPosts;
         this.entityManager = entityManager;
+        this.presence = presence;
     }
 
     public Person me(String email) { return person(user(email)); }
@@ -73,10 +75,20 @@ public class SocialService {
                 }));
     }
 
-    public PageView<Person> friends(String email, int page) {
+    public PageView<Friend> friends(String email, int page) {
         User viewer = user(email);
+        Set<String> online = presence.onlineEmails();
         return PageView.of(friendships.friends(viewer.getId(), paging(page, 20))
-                .map(f -> person(f.getLowUser().getId().equals(viewer.getId()) ? f.getHighUser() : f.getLowUser())));
+                .map(f -> {
+                    User friend = f.getLowUser().getId().equals(viewer.getId()) ? f.getHighUser() : f.getLowUser();
+                    return new Friend(friend.getId(), friend.getFullName(), online.contains(friend.getEmail()));
+                }));
+    }
+
+    public java.util.List<Long> onlineFriends(String email) {
+        User viewer = user(email);
+        Set<String> online = presence.onlineEmails();
+        return online.isEmpty() ? java.util.List.of() : friendships.onlineFriends(viewer.getId(), online);
     }
 
     public PageView<Request> requests(String email, int page) {

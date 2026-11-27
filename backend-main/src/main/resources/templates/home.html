@@ -92,13 +92,13 @@
         </div>
         
         <div class="box prayer">
-            <div class="box-head"><h2>Prayer</h2><a href="#">View all →</a></div>
-            <div class="prayer-body">
+            <div class="box-head"><h2>Prayer</h2><a th:href="@{/prayer}">View all →</a></div>
+            <div class="prayer-body" aria-live="polite">
                 <i class="bi bi-moon-stars"></i>
                 <div>
                     <span class="muted">Next prayer</span>
-                    <div class="prayer-name">Maghrib</div>
-                    <span class="muted">5:12 PM</span>
+                    <div class="prayer-name" id="home-prayer-name">Loading...</div>
+                    <span class="muted" id="home-prayer-time">Checking prayer times...</span>
                 </div>
             </div>
         </div>
@@ -113,5 +113,6 @@
     h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
 </script>
 <script th:src="@{/js/shell.js}"></script>
+<script th:src="@{/js/home-prayer.js(v=1)}"></script>
 </body>
 </html>
