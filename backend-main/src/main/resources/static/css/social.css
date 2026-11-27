@@ -3,6 +3,7 @@
 .social-main {
   --so-surface: #162127; --so-line: #3a3534; --so-accent: #cf9d7b;
   flex: 1; min-width: 0; padding: 1rem 1.6rem 3rem;
+  background: #0c1519 url('/images/socialbg.png') center / cover no-repeat fixed;
 }
 .social-main [hidden] { display: none !important; }
 .social-topbar { margin-bottom: 0.4rem; }
@@ -69,6 +70,8 @@
 .social-person + .social-person { border-top: 1px solid var(--so-line); }
 .social-person-info { flex: 1; min-width: 0; }
 .social-person-name { font-weight: 500; font-size: 0.85rem; overflow-wrap: anywhere; }
+#friend-list .social-person-name { display: flex; align-items: center; gap: 0.5rem; }
+.social-online-dot { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: #64d98b; box-shadow: 0 0 6px #64d98b40; }
 .social-person-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
 .social-person-actions button { font-size: 0.75rem; padding: 0.45rem 0.8rem; }
 .social-person-state { color: #b9b8b1; font-size: 0.75rem; margin-top: 0.5rem; }
@@ -144,7 +147,7 @@
   .social-app .sidebar .logo { width: 100%; padding-bottom: 8px; }
   .social-app .sidebar a.nav { padding: 8px 10px; }
   .social-app .side-card { display: none; }
-  .social-main { padding: 1rem 14px 2rem; }
+  .social-main { padding: 1rem 14px 2rem; background-attachment: scroll; }
   .social-topbar .sh-topbar { flex-wrap: wrap; }
   .social-topbar { margin-bottom: 1.5rem; }
   .social-card { padding: 1rem; }

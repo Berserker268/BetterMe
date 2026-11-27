@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" th:href="@{/css/shell.css}">
-  <link rel="stylesheet" th:href="@{/css/prayer.css}">
+  <link rel="stylesheet" th:href="@{/css/prayer.css(v=3)}">
 </head>
 <body class="prayer-body">
 <div class="app prayer-app">
@@ -74,16 +74,19 @@
       <aside class="prayer-card" aria-labelledby="prTrendTitle">
         <h2 id="prTrendTitle">Last 7 days</h2>
         <div id="prBeads" class="prayer-beads"></div>
-        <p id="prEmpty" class="prayer-hint" hidden>Nothing logged in the last 30 days yet. Mark a prayer and it will show up here.</p>
+        <p id="prEmpty" class="prayer-hint" hidden>Pray Salah to get started!</p>
         <dl class="prayer-facts">
           <div><dt>7-day total</dt><dd id="prWeek">-</dd></div>
           <div><dt>30-day total</dt><dd id="prMonth">-</dd></div>
           <div><dt>Streak</dt><dd id="prStreak">-</dd></div>
         </dl>
-        <p class="prayer-hint">Totals include today, even if it isn't finished. A streak is consecutive days with all five marked.
-          Days you haven't logged show as not logged, not as missed.</p>
+        <p class="prayer-hint">One prayer at a time, one day stronger. Complete all five to keep your streak glowing 🔥
+          Missed a day? No problem, offer your next Salah for a fresh start.</p>
       </aside>
     </div>
+    <footer class="prayer-footer">
+      <p><strong>&ldquo;Indeed, we belong to Allah... and indeed, to Him we shall return.&rdquo;</strong> <span>&mdash; Jaadugar</span></p>
+    </footer>
   </main>
 </div>
 <script th:src="@{/js/shell.js}"></script>

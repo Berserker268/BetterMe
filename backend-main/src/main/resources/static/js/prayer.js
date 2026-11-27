@@ -7,6 +7,7 @@
   const PREFS_KEY = 'betterme.prayer.prefs';
   let current = null;   // the Day currently shown
   let busy = false;
+  let noticeTimer, noticeHideTimer;
 
   // ---- per-browser convenience: remember location/method (never trusted by the server) ----
   function loadPrefs() {
@@ -55,9 +56,18 @@
 
   function say(text, isError) {
     const el = $('prMessage');
+    clearTimeout(noticeTimer);
+    clearTimeout(noticeHideTimer);
+    el.classList.remove('is-dismissing');
     el.textContent = text || '';
     el.hidden = !text;
     el.classList.toggle('is-error', !!isError);
+    if (text && !isError) {
+      noticeTimer = setTimeout(() => {
+        el.classList.add('is-dismissing');
+        noticeHideTimer = setTimeout(() => { el.hidden = true; }, 400);
+      }, 1000);
+    }
   }
 
   // ---- rendering (textContent only; never innerHTML with server data) ----
@@ -147,10 +157,10 @@
       box.append(col);
     }
     $('prEmpty').hidden = s.hasAnyLogs;
-    $('prWeek').textContent = s.weekCompleted + '/35 (' + s.weekPercent + '%)';
-    $('prMonth').textContent = s.monthCompleted + '/150 (' + s.monthPercent + '%)';
+    $('prWeek').textContent = s.weekCompleted + '/35';
+    $('prMonth').textContent = s.monthCompleted + '/150';
     $('prStreak').textContent = s.streak === 0 ? 'None yet'
-      : s.streak + (s.streakCapped ? '+' : '') + (s.streak === 1 ? ' day' : ' days');
+      : s.streak + (s.streakCapped ? '+' : '') + (s.streak === 1 ? ' day' : ' days') + ' 🔥';
   }
 
   // ---- actions ----
